@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://travel-app-xxkltu.web.app/';
+const API_URL = import.meta.env.VITE_API_URL || 'https://simi129.github.io/TMA_NEW/';
 
 const instance = axios.create({
   baseURL: API_URL,
