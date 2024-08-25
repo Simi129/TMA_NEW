@@ -1,0 +1,110 @@
+.friends-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+  width: 100%; /* Занимаем всю ширину */
+  height: 100%; /* Занимаем всю высоту */
+  background-color: #f0f2f5;
+  padding: 1rem; /* Отступы для создания пространства */
+  box-sizing: border-box; /* Учитываем padding и border в размере */
+}
+
+.invite-button {
+  background-color: #0088cc;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-bottom: 20px;
+}
+
+.invite-button:hover {
+  background-color: #006699;
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  width: 80%;
+  max-width: 400px;
+}
+
+.modal p {
+  margin-bottom: 10px;
+  word-break: break-word; /* Изменено с break-all на более естественный перенос */
+}
+
+.modal button {
+  background-color: #0088cc;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  margin: 5px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.modal button:hover {
+  background-color: #006699;
+}
+
+.friends-list {
+  width: 100%; /* Занимаем всю доступную ширину */
+  max-width: 800px; /* Ограничиваем максимальную ширину для приятного отображения */
+  margin-top: 20px;
+  background-color: white;
+  border-radius: 8px;
+  padding: 15px;
+  box-sizing: border-box; /* Учитываем padding и border в размере */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.friend-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.friend-item:last-child {
+  border-bottom: none;
+}
+
+.friend-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 15px;
+  background-color: #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #666;
+}
+
+.friend-info {
+  flex-grow: 1; /* Элемент расширяется, чтобы занять всю доступную ширину */
+}
+
+.friend-name {
+  font-weight: bold;
+  margin-bottom: 3px;
+}
+
+.friend-status {
+  font-size: 14px;
+  color: #666;
+}

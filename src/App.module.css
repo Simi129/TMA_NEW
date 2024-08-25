@@ -1,0 +1,53 @@
+.appContainer {
+  display: flex;
+  flex-direction: column;
+  height: var(--tg-viewport-stable-height, 100vh);
+  width: 100%;
+  overflow: hidden;
+}
+
+.contentContainer {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-top: 60px; /* Высота TopBar */
+  padding-bottom: 56px; /* Высота BottomNav */
+}
+
+.bottomNavContainer {
+  position: fixed;
+  bottom: var(--tg-bottom-safe-area, 0px);
+  left: 0;
+  right: 0;
+  background-color: var(--tg-theme-bg-color);
+  z-index: 1000;
+}
+
+/* Общие стили */
+:global(html), :global(body) {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--tg-theme-bg-color, #ffffff);
+  color: var(--tg-theme-text-color, #000000);
+}
+
+:global(#root) {
+  max-width: 100%;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Адаптивные стили */
+@media (min-width: 768px) {
+  .contentContainer {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}

@@ -1,0 +1,76 @@
+.calendarContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 16px;
+  background-color: var(--tg-theme-secondary-bg-color, #1e2738);
+  color: var(--tg-theme-text-color, white);
+  overflow-y: auto;
+}
+
+.title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.subtitle, .warning, .friendsNote, .nextDay {
+  font-size: 0.8rem;
+  margin-bottom: 4px;
+  color: var(--tg-theme-hint-color, #a0a0a0);
+}
+
+.warning {
+  color: var(--tg-theme-link-color, #ff9800);
+}
+
+.daysGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.dayPaper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 8px;
+  background-color: var(--tg-theme-bg-color, #2c3a50);
+  color: var(--tg-theme-text-color, white);
+  border-radius: 8px;
+}
+
+.completed {
+  background-color: var(--tg-theme-button-color, #4caf50);
+}
+
+.dayNumber {
+  font-size: 0.7rem;
+  margin-bottom: 2px;
+}
+
+.reward {
+  font-weight: bold;
+  color: var(--tg-theme-button-text-color, #ffd700);
+  font-size: 0.9rem;
+}
+
+.extraReward {
+  font-size: 0.7rem;
+  color: var(--tg-theme-button-color, #4caf50);
+}
+
+.playButton {
+  margin-top: 16px;
+  width: 100%;
+  background-color: var(--tg-theme-button-color, #4caf50) !important;
+  color: var(--tg-theme-button-text-color, white) !important;
+}
+
+@media (max-height: 600px) {
+  .subtitle, .warning, .friendsNote {
+    display: none;
+  }
+}

@@ -1,0 +1,46 @@
+.topBar {
+  background-color: #0088cc;
+  color: white;
+  padding: 10px 15px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  left: 0;
+  right: 0;
+  position: fixed;
+  top: 0;
+  z-index: 1000;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.level {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.stats {
+  font-size: 14px;
+  padding-right: 20px;
+}
+
+.progressBar {
+  height: 5px;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.progressBarFill {
+  height: 100%;
+  background-color: #ffffff;
+  transition: width 0.3s ease;
+}

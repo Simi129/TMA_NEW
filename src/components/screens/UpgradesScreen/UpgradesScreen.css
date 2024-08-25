@@ -1,0 +1,88 @@
+.upgrades-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.category-tabs {
+  display: flex;
+  justify-content: space-around;
+  background-color: #f0f0f0;
+  padding: 10px 0;
+}
+
+.category-tab {
+  padding: 10px 20px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.category-tab.active {
+  background-color: #0088cc;
+  color: white;
+}
+
+.upgrades-list {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.upgrade-item {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.upgrade-info {
+  flex-grow: 1;
+}
+
+.upgrade-name {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.upgrade-level {
+  color: #666;
+  font-size: 14px;
+}
+
+.upgrade-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-right: 15px;
+}
+
+.upgrade-cost, .upgrade-income {
+  font-size: 14px;
+  color: #444;
+}
+
+.buy-button {
+  background-color: #0088cc;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.buy-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.buy-button:hover:not(:disabled) {
+  background-color: #006699;
+}

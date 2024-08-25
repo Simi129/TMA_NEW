@@ -1,0 +1,53 @@
+.questsContainer {
+  padding: 16px;
+  background-color: var(--tg-theme-bg-color);
+  color: var(--tg-theme-text-color);
+  min-height: calc(var(--tg-viewport-stable-height) - 56px);
+}
+
+.title {
+  margin-bottom: 16px;
+  color: var(--tg-theme-text-color);
+}
+
+.questItem {
+  margin-bottom: 16px;
+  background-color: var(--tg-theme-secondary-bg-color);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.questIcon {
+  color: var(--tg-theme-button-color);
+}
+
+.questText {
+  flex-grow: 1;
+  margin-right: 16px;
+}
+
+.startButton {
+  background-color: var(--tg-theme-button-color) !important;
+  color: var(--tg-theme-button-text-color) !important;
+}
+
+.modalContent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--tg-theme-bg-color);
+  color: var(--tg-theme-text-color);
+  padding: 24px;
+  border-radius: 8px;
+  outline: none;
+  max-width: 90%;
+  max-height: 90%;
+  overflow-y: auto;
+}
+
+.closeButton {
+  margin-top: 16px;
+  background-color: var(--tg-theme-button-color) !important;
+  color: var(--tg-theme-button-text-color) !important;
+}
