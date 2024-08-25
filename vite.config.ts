@@ -20,7 +20,7 @@ export default defineConfig({
     // Добавляем прокси
     proxy: {
       '/auth': {
-        target: 'https://travel-app-xxkltu.web.app',
+        target: 'https://simi129.github.io/TMA_NEW',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/auth/, '/auth')

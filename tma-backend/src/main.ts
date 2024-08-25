@@ -6,7 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
   const corsOptions: CorsOptions = {
-    origin: ['https://walletbot.me', 'https://travel-app-xxkltu.web.app', 'http://localhost:5173'],
+    origin: ['https://walletbot.me', 'https://simi129.github.io', 'http://localhost:5173'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: 'Origin,X-Requested-With,Content-Type,Accept,Authorization',
     credentials: true,
