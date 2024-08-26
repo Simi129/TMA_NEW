@@ -12,7 +12,8 @@
     "build:backend": "cd tma-backend && npm run build",
     "build": "npm run build:frontend && npm run build:backend",
     "predeploy": "npm run build:frontend",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "dev": "vite"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
@@ -40,6 +41,7 @@
     "@types/http-proxy": "^1.17.15",
     "@types/react": "^18.3.4",
     "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-basic-ssl": "^1.1.0",
     "@vitejs/plugin-react-swc": "^3.7.0",
     "concurrently": "^8.2.2",
     "eslint": "^9.9.1",

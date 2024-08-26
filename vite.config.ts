@@ -1,9 +1,10 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import path from 'path'
+import basicSsl from '@vitejs/plugin-basic-ssl'
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), basicSsl()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src')
@@ -17,6 +18,10 @@ export default defineConfig({
   server: {
     port: 5173,
     open: true,
+    https: {
+      key: undefined,
+      cert: undefined,
+    },
     // Добавляем прокси
     proxy: {
       '/auth': {
