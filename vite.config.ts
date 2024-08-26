@@ -24,10 +24,7 @@ export default defineConfig({
   server: {
     port: 5173,
     open: true,
-    https: {
-      key: undefined,
-      cert: undefined,
-    },
+    
     proxy: {
       '/auth': {
         target: 'https://simi129.github.io/TMA_NEW',
