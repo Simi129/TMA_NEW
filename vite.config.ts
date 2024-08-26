@@ -1,11 +1,11 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import path from 'path'
-import basicSsl from '@vitejs/plugin-basic-ssl'
+
 
 export default defineConfig({
   base: '/TMA_NEW/', // Добавляем базовый путь для GitHub Pages
-  plugins: [react(), basicSsl()],
+  plugins: react(),
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src')
