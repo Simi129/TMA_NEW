@@ -4,6 +4,7 @@ import path from 'path'
 import basicSsl from '@vitejs/plugin-basic-ssl'
 
 export default defineConfig({
+  base: '/TMA_NEW/', // Добавляем базовый путь для GitHub Pages
   plugins: [react(), basicSsl()],
   resolve: {
     alias: {
@@ -13,7 +14,12 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
-    sourcemap: false
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: undefined,
+      },
+    },
   },
   server: {
     port: 5173,
@@ -22,13 +28,22 @@ export default defineConfig({
       key: undefined,
       cert: undefined,
     },
-    // Добавляем прокси
     proxy: {
       '/auth': {
         target: 'https://simi129.github.io/TMA_NEW',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/auth/, '/auth')
+      }
+    }
+  },
+  // Добавляем настройки для правильной обработки путей в production
+  experimental: {
+    renderBuiltUrl(filename: string, { hostType }: { hostType: 'js' | 'css' | 'html' }) {
+      if (hostType === 'js') {
+        return { runtime: `window.__toDeploy = '${filename}'` }
+      } else {
+        return { relative: true }
       }
     }
   }
