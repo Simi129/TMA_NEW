@@ -44,7 +44,7 @@ const FriendsScreen: React.FC = () => {
     if (initData && initData.user) {
       const userId = initData.user.id;
       const referralCode = btoa(userId.toString());
-      const botUsername = 'newcari_bot'; // Замените на username вашего бота
+      const botUsername = 'lastrunman_bot'; // Замените на username вашего бота
       const link = `https://t.me/${botUsername}?start=${referralCode}`;
       setReferralLink(link);
     } else {

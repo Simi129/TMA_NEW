@@ -27,7 +27,7 @@ const QuestsScreen: React.FC = () => {
   const handleCloseModal = () => setOpenModal(false);
 
   const handleTelegramSubscription = useCallback(() => {
-    const channelUsername = 'your_channel_username'; // Замените на username вашего канала
+    const channelUsername = 'lastrunmanage'; // Замените на username вашего канала
     const channelUrl = `https://t.me/${channelUsername}`;
 
     const tg = window.Telegram?.WebApp;
