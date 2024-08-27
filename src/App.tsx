@@ -13,8 +13,8 @@ import StadiumScreen from './components/screens/StadiumScreen/StadiumScreen';
 import FriendsScreen from './components/screens/FriendsScreen/FriendsScreen';
 import QuestsScreen from './components/screens/QuestsScreen/QuestsScreen';
 import styles from './App.module.css';
-import './types'; // Импортируем типы
-import { config } from './utils/config';
+import './types';
+
 
 interface InitData {
   auth_date: number;
@@ -50,10 +50,8 @@ const theme = createTheme({
   },
 });
 
-
-
-// Обновленный URL манифеста
-const manifestUrl = `${config.BACKEND_URL}/api/proxy/${encodeURIComponent(config.MANIFEST_URL)}`;
+// Используем прямой URL манифеста с GitHub Pages
+const manifestUrl = 'https://simi129.github.io/TMA_NEW/tonconnect-manifest.json';
 
 export const App: React.FC = () => {
   const [initData, setInitData] = useState<InitData | null>(null);
@@ -73,7 +71,6 @@ export const App: React.FC = () => {
         setInitData(initData as unknown as InitData);
       }
 
-      // Устанавливаем высоту viewport и безопасную зону
       if (window.Telegram?.WebApp) {
         document.documentElement.style.setProperty(
           '--tg-viewport-stable-height',
@@ -85,7 +82,6 @@ export const App: React.FC = () => {
         );
       }
 
-      // Cleanup function
       return () => {
         vpCleanup();
         tpCleanup();
@@ -102,37 +98,36 @@ export const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <TonConnectUIProvider manifestUrl={manifestUrl}>
-      <CoinProvider>
-        <Router>
-          <Box className={styles.appContainer}>
-            <TopBar 
-              level={1}
-              progress={50}
-              coinsPerHour={10}
-              // totalCoins prop удален отсюда
-            />
-            <Box className={styles.contentContainer}>
-              <Routes>
-                <Route path="/" element={
-                  <HomeScreen 
-                    initData={initData}
-                    authStatus={auth.user ? 'Authenticated' : 'Not authenticated'}
-                    user={auth.user}
-                  />
-                } />
-                <Route path="/upgrades" element={<UpgradesScreen />} />
-                <Route path="/stadium" element={<StadiumScreen />} />
-                <Route path="/friends" element={<FriendsScreen />} />
-                <Route path="/quests" element={<QuestsScreen />} />
-              </Routes>
+        <CoinProvider>
+          <Router>
+            <Box className={styles.appContainer}>
+              <TopBar 
+                level={1}
+                progress={50}
+                coinsPerHour={10}
+              />
+              <Box className={styles.contentContainer}>
+                <Routes>
+                  <Route path="/" element={
+                    <HomeScreen 
+                      initData={initData}
+                      authStatus={auth.user ? 'Authenticated' : 'Not authenticated'}
+                      user={auth.user}
+                    />
+                  } />
+                  <Route path="/upgrades" element={<UpgradesScreen />} />
+                  <Route path="/stadium" element={<StadiumScreen />} />
+                  <Route path="/friends" element={<FriendsScreen />} />
+                  <Route path="/quests" element={<QuestsScreen />} />
+                </Routes>
+              </Box>
+              <Box className={styles.bottomNavContainer}>
+                <BottomNav />
+              </Box>
             </Box>
-            <Box className={styles.bottomNavContainer}>
-              <BottomNav />
-            </Box>
-          </Box>
-        </Router>
-      </CoinProvider>
-    </TonConnectUIProvider>
+          </Router>
+        </CoinProvider>
+      </TonConnectUIProvider>
     </ThemeProvider>
   );
 }
