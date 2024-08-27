@@ -3,6 +3,7 @@ import WalletDisplay from '../../WalletDisplay/WalletDisplay';
 import { useCoins } from '../../../contexts/CoinContext';
 import styles from './HomeScreen.module.css';
 
+const coachImage = 'assets/tg-Dwu3q7mB.png';
 
 const HomeScreen: React.FC = () => {
   const { totalCoins, addCoins } = useCoins();
@@ -24,7 +25,7 @@ const HomeScreen: React.FC = () => {
       
       <div className={styles.imageContainer}>
         <button onClick={handleImageClick} className={styles.clickableImage}>
-          <img src="/tg.png" alt="Click to earn coin" />
+          <img src={coachImage} alt="Click to earn coin" />
         </button>
         <p className={styles.clickText}>Click the image to earn a coin!</p>
       </div>
