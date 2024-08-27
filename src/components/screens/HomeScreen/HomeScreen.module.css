@@ -1,46 +1,61 @@
 .container {
-  padding: 16px;
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: var(--tg-theme-bg-color);
+  color: var(--tg-theme-text-color);
+  min-height: 100vh;
 }
 
-.walletDisplay {
+.walletContainer {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 20px;
+  right: 20px;
+  background-color: var(--tg-theme-secondary-bg-color);
+  padding: 10px 15px;
+  border-radius: 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 .title {
   font-size: 24px;
-  margin-bottom: 16px;
+  margin-bottom: 30px;
+  text-align: center;
 }
 
 .imageContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 16px;
+  margin-bottom: 30px;
 }
 
 .clickableImage {
-  width: 100px;
-  height: 100px;
-  cursor: pointer;
-  border: none;
   background: none;
-  padding: 0;
-  margin: 0;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.clickableImage:active {
+  transform: scale(0.95);
+}
+
+.clickableImage img {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
 }
 
 .clickText {
-  margin-top: 8px;
+  margin-top: 10px;
+  font-size: 16px;
+  text-align: center;
 }
 
-.sectionTitle {
-  font-size: 20px;
-  margin-top: 16px;
-  margin-bottom: 8px;
-}
-
-.infoText {
-  margin-bottom: 4px;
+.coinInfo {
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 20px;
 }
