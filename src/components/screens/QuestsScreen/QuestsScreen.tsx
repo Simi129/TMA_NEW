@@ -66,24 +66,22 @@ const QuestsScreen: React.FC = () => {
   const handleWalletConnection = useCallback(async () => {
   try {
     await tonConnectUI.openModal();
-    // Проверяем подключение сразу после открытия модального окна
     if (tonConnectUI.connected) {
       setQuests(prevQuests => 
         prevQuests.map(quest => 
           quest.id === 2 ? { ...quest, completed: true } : quest
         )
       );
-      addCoins(200); // 200 монет за подключение кошелька
+      addCoins(200);
       const tg = window.Telegram?.WebApp;
       if (tg && typeof tg.showAlert === 'function') {
-        tg.showAlert('Кошелек успешно подключен! Вы получили 200 монет.');
+        tg.showAlert('Вы успешно подключил свой Ton кошелёк');
       } else {
         alert('Кошелек успешно подключен! Вы получили 200 монет.');
       }
     }
   } catch (error) {
     console.error('Ошибка при подключении кошелька:', error);
-    // Здесь можно добавить обработку ошибки, например, показать пользователю сообщение
   }
 }, [tonConnectUI, addCoins]);
 

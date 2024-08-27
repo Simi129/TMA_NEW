@@ -1,0 +1,46 @@
+.container {
+  padding: 16px;
+  position: relative;
+}
+
+.walletDisplay {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+}
+
+.title {
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+
+.imageContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.clickableImage {
+  width: 100px;
+  height: 100px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+}
+
+.clickText {
+  margin-top: 8px;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.infoText {
+  margin-bottom: 4px;
+}
