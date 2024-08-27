@@ -2,8 +2,9 @@ import React from 'react';
 import WalletDisplay from '../../WalletDisplay/WalletDisplay';
 import { useCoins } from '../../../contexts/CoinContext';
 import styles from './HomeScreen.module.css';
+import { config } from '../../../utils/config';
 
-const coachImage = '/tg.png';
+const coachImage = `${config.STATIC_URL}/tg.png`;
 
 const HomeScreen: React.FC = () => {
   const { totalCoins, addCoins } = useCoins();

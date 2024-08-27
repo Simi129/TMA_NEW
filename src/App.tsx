@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { HashRouter as Router, Route, Routes } from 'react-router-dom';
 import { CoinProvider } from './contexts/CoinContext';
 import { TonConnectUIProvider } from '@tonconnect/ui-react';
 import { Box, ThemeProvider, createTheme } from '@mui/material';
-import { retrieveLaunchParams, bindViewportCSSVars, initViewport, bindThemeParamsCSSVars, initThemeParams } from "@telegram-apps/sdk";
-import { useAuth } from "./hooks/useAuth";
+import { bindViewportCSSVars, initViewport, bindThemeParamsCSSVars, initThemeParams } from "@telegram-apps/sdk";
 import TopBar from './components/TopBar/TopBar';
 import BottomNav from './components/BottomNav/BottomNav';
 import HomeScreen from './components/screens/HomeScreen/HomeScreen';
@@ -14,24 +13,6 @@ import FriendsScreen from './components/screens/FriendsScreen/FriendsScreen';
 import QuestsScreen from './components/screens/QuestsScreen/QuestsScreen';
 import styles from './App.module.css';
 import './types';
-
-
-interface InitData {
-  auth_date: number;
-  query_id?: string;
-  user?: {
-    id: number;
-    first_name: string;
-    last_name?: string;
-    username?: string;
-    language_code?: string;
-    allows_write_to_pm?: boolean;
-  };
-  chat_instance?: string;
-  chat_type?: string;
-  start_param?: string;
-  hash: string;
-}
 
 const theme = createTheme({
   components: {
@@ -50,12 +31,10 @@ const theme = createTheme({
   },
 });
 
-// Используем прямой URL манифеста с GitHub Pages
 const manifestUrl = 'https://simi129.github.io/TMA_NEW/tonconnect-manifest.json';
 
 export const App: React.FC = () => {
-  const [initData, setInitData] = useState<InitData | null>(null);
-  const auth = useAuth();
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     const initApp = async () => {
@@ -65,11 +44,6 @@ export const App: React.FC = () => {
 
       const [tpResult, tpCleanup] = initThemeParams();
       bindThemeParamsCSSVars(tpResult);
-
-      const { initData } = retrieveLaunchParams();
-      if (initData) {
-        setInitData(initData as unknown as InitData);
-      }
 
       if (window.Telegram?.WebApp) {
         document.documentElement.style.setProperty(
@@ -82,6 +56,8 @@ export const App: React.FC = () => {
         );
       }
 
+      setIsInitialized(true);
+
       return () => {
         vpCleanup();
         tpCleanup();
@@ -91,7 +67,7 @@ export const App: React.FC = () => {
     initApp();
   }, []);
 
-  if (!initData) {
+  if (!isInitialized) {
     return <div>Loading...</div>;
   }
 
@@ -108,13 +84,7 @@ export const App: React.FC = () => {
               />
               <Box className={styles.contentContainer}>
                 <Routes>
-                  <Route path="/" element={
-                    <HomeScreen 
-                      initData={initData}
-                      authStatus={auth.user ? 'Authenticated' : 'Not authenticated'}
-                      user={auth.user}
-                    />
-                  } />
+                  <Route path="/" element={<HomeScreen />} />
                   <Route path="/upgrades" element={<UpgradesScreen />} />
                   <Route path="/stadium" element={<StadiumScreen />} />
                   <Route path="/friends" element={<FriendsScreen />} />
