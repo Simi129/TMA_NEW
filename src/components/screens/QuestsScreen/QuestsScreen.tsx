@@ -4,7 +4,7 @@ import { Star, Wallet, Telegram, Group, Twitter } from '@mui/icons-material';
 import { useTonConnectUI } from '@tonconnect/ui-react';
 import DailyRewardCalendar from './DailyRewardCalendar';
 import styles from './QuestsScreen.module.css';
-import '../../../types'; // Убедитесь, что путь к файлу types.ts правильный
+import '../../../types';
 import { useCoins } from '../../../contexts/CoinContext';
 
 interface Quest {
@@ -27,7 +27,7 @@ const QuestsScreen: React.FC = () => {
   const handleCloseModal = () => setOpenModal(false);
 
   const handleTelegramSubscription = useCallback(() => {
-    const channelUsername = 'lastrunmanage'; // Замените на username вашего канала
+    const channelUsername = 'lastrunmanage';
     const channelUrl = `https://t.me/${channelUsername}`;
 
     const tg = window.Telegram?.WebApp;
@@ -42,7 +42,6 @@ const QuestsScreen: React.FC = () => {
   }, []);
 
   const checkSubscription = useCallback(() => {
-    // Здесь должен быть запрос к вашему API для проверки подписки пользователя
     setTimeout(() => {
       setQuests(prevQuests => 
         prevQuests.map(quest => 
@@ -50,7 +49,7 @@ const QuestsScreen: React.FC = () => {
         )
       );
       
-      addCoins(150); // 150 монет за подписку на канал
+      addCoins(150);
       
       const tg = window.Telegram?.WebApp;
       if (tg && typeof tg.showAlert === 'function') {
@@ -64,32 +63,42 @@ const QuestsScreen: React.FC = () => {
   }, [addCoins]);
 
   const handleWalletConnection = useCallback(async () => {
-  try {
-    await tonConnectUI.openModal();
-    if (tonConnectUI.connected) {
-      setQuests(prevQuests => 
-        prevQuests.map(quest => 
-          quest.id === 2 ? { ...quest, completed: true } : quest
-        )
-      );
-      addCoins(200);
+    try {
+      await tonConnectUI.openModal();
+      if (tonConnectUI.connected) {
+        setQuests(prevQuests => 
+          prevQuests.map(quest => 
+            quest.id === 2 ? { ...quest, completed: true } : quest
+          )
+        );
+        addCoins(200);
+        const tg = window.Telegram?.WebApp;
+        console.log('TonConnect status:', tonConnectUI.connected);
+        console.log('Telegram WebApp available:', !!tg);
+        if (tg && typeof tg.showAlert === 'function') {
+          setTimeout(() => {
+            tg.showAlert('Вы успешно подключили свой TON кошелёк и получили 200 монет!');
+          }, 100);
+        } else {
+          alert('Кошелек успешно подключен! Вы получили 200 монет.');
+        }
+      }
+    } catch (error) {
+      console.error('Ошибка при подключении кошелька:', error);
       const tg = window.Telegram?.WebApp;
       if (tg && typeof tg.showAlert === 'function') {
-        tg.showAlert('Вы успешно подключил свой Ton кошелёк');
+        tg.showAlert('Ошибка при подключении кошелька. Попробуйте ещё раз.');
       } else {
-        alert('Кошелек успешно подключен! Вы получили 200 монет.');
+        alert('Ошибка при подключении кошелька. Попробуйте ещё раз.');
       }
     }
-  } catch (error) {
-    console.error('Ошибка при подключении кошелька:', error);
-  }
-}, [tonConnectUI, addCoins]);
+  }, [tonConnectUI, addCoins]);
 
   useEffect(() => {
     if (isCheckingSubscription) {
       const intervalId = setInterval(() => {
         checkSubscription();
-      }, 5000); // Проверяем каждые 5 секунд
+      }, 5000);
       return () => clearInterval(intervalId);
     }
   }, [isCheckingSubscription, checkSubscription]);

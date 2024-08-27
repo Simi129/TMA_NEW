@@ -39,7 +39,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ initData, authStatus, user }) =
       
       <div className={styles.imageContainer}>
         <button onClick={handleImageClick} className={styles.clickableImage}>
-          <img src="/tg.png" alt="Click to earn coin" />
+          <img src="./public/tg.png" alt="Click to earn coin" />
         </button>
         <p className={styles.clickText}>Click the image to earn a coin!</p>
       </div>
