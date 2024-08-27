@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { HashRouter as Router, Route, Routes } from 'react-router-dom';
 import { CoinProvider } from './contexts/CoinContext';
+import { LevelProvider } from './contexts/LevelContext';
 import { TonConnectUIProvider } from '@tonconnect/ui-react';
 import { Box, ThemeProvider, createTheme } from '@mui/material';
 import { bindViewportCSSVars, initViewport, bindThemeParamsCSSVars, initThemeParams } from "@telegram-apps/sdk";
@@ -71,31 +72,32 @@ export const App: React.FC = () => {
     return <div>Loading...</div>;
   }
 
-  return (
+   return (
     <ThemeProvider theme={theme}>
       <TonConnectUIProvider manifestUrl={manifestUrl}>
         <CoinProvider>
-          <Router>
-            <Box className={styles.appContainer}>
-              <TopBar 
-                level={1}
-                progress={50}
-                coinsPerHour={10}
-              />
-              <Box className={styles.contentContainer}>
-                <Routes>
-                  <Route path="/" element={<HomeScreen />} />
-                  <Route path="/upgrades" element={<UpgradesScreen />} />
-                  <Route path="/stadium" element={<StadiumScreen />} />
-                  <Route path="/friends" element={<FriendsScreen />} />
-                  <Route path="/quests" element={<QuestsScreen />} />
-                </Routes>
+          <LevelProvider>
+            <Router>
+              <Box className={styles.appContainer}>
+                <TopBar 
+                  progress={50}
+                  coinsPerHour={10}
+                />
+                <Box className={styles.contentContainer}>
+                  <Routes>
+                    <Route path="/" element={<HomeScreen />} />
+                    <Route path="/upgrades" element={<UpgradesScreen />} />
+                    <Route path="/stadium" element={<StadiumScreen />} />
+                    <Route path="/friends" element={<FriendsScreen />} />
+                    <Route path="/quests" element={<QuestsScreen />} />
+                  </Routes>
+                </Box>
+                <Box className={styles.bottomNavContainer}>
+                  <BottomNav />
+                </Box>
               </Box>
-              <Box className={styles.bottomNavContainer}>
-                <BottomNav />
-              </Box>
-            </Box>
-          </Router>
+            </Router>
+          </LevelProvider>
         </CoinProvider>
       </TonConnectUIProvider>
     </ThemeProvider>

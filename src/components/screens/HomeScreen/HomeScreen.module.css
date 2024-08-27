@@ -2,11 +2,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   height: 100vh;
   padding: 20px;
   background-color: var(--tg-theme-bg-color);
   color: var(--tg-theme-text-color);
+  overflow: hidden;
 }
 
 .balanceContainer {
@@ -36,8 +37,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
   flex-grow: 1;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
 }
 
 .clickableImage {
@@ -46,16 +49,43 @@
   padding: 0;
   cursor: pointer;
   transition: transform 0.2s;
+  outline: none;
+  position: relative;
 }
 
 .clickableImage:active {
   transform: scale(0.95);
 }
 
+.clickableImage:focus {
+  outline: none;
+}
+
 .clickableImage img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  max-width: 80vw;
+  width: auto;
+  height: auto;
+  max-width: 100%;
   max-height: 70vh;
+  object-fit: contain;
+  transform: perspective(1000px) rotateX(var(--tiltX, 0)) rotateY(var(--tiltY, 0));
+  transition: transform 0.1s;
+}
+
+.clickEffect {
+  position: absolute;
+  pointer-events: none;
+  animation: floatUp 1s ease-out forwards;
+  font-weight: bold;
+  color: gold;
+}
+
+@keyframes floatUp {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
 }
