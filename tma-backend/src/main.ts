@@ -8,7 +8,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   
   const corsOptions: CorsOptions = {
-    origin: ['https://walletbot.me', 'https://simi129.github.io', 'https://faa8-46-109-142-185.ngrok-free.app'],
+    origin: ['https://walletbot.me', 'https://simi129.github.io', 'https://72a7-46-109-142-185.ngrok-free.app', 'http://localhost:5173/TMA_NEW/'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: 'Origin,X-Requested-With,Content-Type,Accept,Authorization',
     credentials: true,
