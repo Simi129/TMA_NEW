@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5173';
+const API_URL = import.meta.env.VITE_API_URL || 'https://faa8-46-109-142-185.ngrok-free.app';
 
 const instance = axios.create({
   baseURL: API_URL,
