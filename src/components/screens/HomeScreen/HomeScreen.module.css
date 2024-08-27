@@ -2,10 +2,24 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
+  height: 100vh;
   padding: 20px;
   background-color: var(--tg-theme-bg-color);
   color: var(--tg-theme-text-color);
-  min-height: 100vh;
+}
+
+.balanceContainer {
+  background-color: var(--tg-theme-secondary-bg-color);
+  padding: 10px 15px;
+  border-radius: 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.balanceText {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
 }
 
 .walletContainer {
@@ -18,22 +32,18 @@
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
-.title {
-  font-size: 24px;
-  margin-bottom: 30px;
-  text-align: center;
-}
-
 .imageContainer {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  margin-bottom: 30px;
+  width: 100%;
+  flex-grow: 1;
 }
 
 .clickableImage {
   background: none;
   border: none;
+  padding: 0;
   cursor: pointer;
   transition: transform 0.2s;
 }
@@ -43,19 +53,9 @@
 }
 
 .clickableImage img {
-  width: 150px;
-  height: 150px;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
-}
-
-.clickText {
-  margin-top: 10px;
-  font-size: 16px;
-  text-align: center;
-}
-
-.coinInfo {
-  font-size: 18px;
-  font-weight: bold;
-  margin-top: 20px;
+  max-width: 80vw;
+  max-height: 70vh;
 }

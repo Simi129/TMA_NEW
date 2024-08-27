@@ -19,20 +19,19 @@ const HomeScreen: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.walletContainer}>
-        <WalletDisplay />
+      <div className={styles.topBar}>
+        <div className={styles.balanceContainer}>
+          <p className={styles.balanceText}>Ваш баланс: {totalCoins}</p>
+        </div>
+        <div className={styles.walletContainer}>
+          <WalletDisplay />
+        </div>
       </div>
-      <h1 className={styles.title}>Welcome to Telegram Mini App</h1>
       
       <div className={styles.imageContainer}>
         <button onClick={handleImageClick} className={styles.clickableImage}>
           <img src={coachImage} alt="Click to earn coin" />
         </button>
-        <p className={styles.clickText}>Click the image to earn a coin!</p>
-      </div>
-
-      <div className={styles.coinInfo}>
-        <p className={styles.coinText}>Total Coins: {totalCoins}</p>
       </div>
     </div>
   );
