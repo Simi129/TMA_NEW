@@ -3,7 +3,7 @@ import WalletDisplay from '../../WalletDisplay/WalletDisplay';
 import { useCoins } from '../../../contexts/CoinContext';
 import styles from './HomeScreen.module.css';
 
-const coachImage = 'assets/tg-Dwu3q7mB.png';
+const coachImage = '/assets/tg-Dwu3q7mB.png';
 
 const HomeScreen: React.FC = () => {
   const { totalCoins, addCoins } = useCoins();
