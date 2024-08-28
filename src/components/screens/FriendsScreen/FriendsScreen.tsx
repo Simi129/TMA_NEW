@@ -1,58 +1,47 @@
 import React, { useState, useEffect } from 'react';
-import { Button, TextField, Snackbar } from '@mui/material';
+import { Button, TextField, Snackbar, CircularProgress } from '@mui/material';
+import { userService, User, Referral } from '../../../api/userService';
 import './FriendsScreen.css';
 import '../../../types';
-
-interface Friend {
-  id: number;
-  name: string;
-  status: string;
-  joinedViaReferral: boolean;
-}
-
-interface InitData {
-  user?: {
-    id: number;
-  };
-}
 
 const FriendsScreen: React.FC = () => {
   const [referralLink, setReferralLink] = useState<string>('');
   const [showSnackbar, setShowSnackbar] = useState<boolean>(false);
-  const [friends, setFriends] = useState<Friend[]>([]);
-  const [initData, setInitData] = useState<InitData | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [referrals, setReferrals] = useState<Referral[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const tg = window.Telegram?.WebApp;
-    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
-      setInitData({ user: { id: tg.initDataUnsafe.user.id } });
-    } else {
-      const randomId = Math.floor(Math.random() * 1000000) + 1;
-      setInitData({ user: { id: randomId } });
-    }
+    const initUser = async () => {
+      try {
+        const currentUser = await userService.getCurrentUser();
+        setUser(currentUser);
+        await fetchReferrals();
+      } catch (error) {
+        console.error('Failed to initialize user:', error);
+        window.Telegram?.WebApp?.showAlert?.('Failed to load user data. Please try again later.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    // Здесь должен быть запрос к API для получения списка друзей
-    // Имитация получения данных с сервера
-    fetchFriends();
+    initUser();
   }, []);
 
-  const fetchFriends = async () => {
-    // Имитация запроса к API
-    const mockApiResponse = [
-      { id: 1, name: "Иван", status: "Присоединился", joinedViaReferral: true },
-      { id: 2, name: "Мария", status: "Ожидает", joinedViaReferral: false },
-      { id: 3, name: "Алексей", status: "Присоединился", joinedViaReferral: true },
-      { id: 4, name: "Елена", status: "Присоединился", joinedViaReferral: false },
-    ];
-
-    setFriends(mockApiResponse);
+  const fetchReferrals = async () => {
+    try {
+      const referralList = await userService.getReferrals();
+      setReferrals(referralList);
+    } catch (error) {
+      console.error('Failed to fetch referrals:', error);
+      window.Telegram?.WebApp?.showAlert?.('Failed to load referrals. Please try again later.');
+    }
   };
 
   const generateReferralLink = () => {
-    if (initData && initData.user) {
-      const userId = initData.user.id;
-      const referralCode = btoa(userId.toString());
-      const botUsername = 'lastrunman_bot';
+    if (user) {
+      const referralCode = btoa(user.telegramId.toString());
+      const botUsername = 'lastrunman_bot'; // Замените на username вашего бота
       const link = `https://t.me/${botUsername}?start=${referralCode}`;
       setReferralLink(link);
     } else {
@@ -71,6 +60,10 @@ const FriendsScreen: React.FC = () => {
         window.Telegram?.WebApp?.showAlert?.('Failed to copy link. Please try again.');
       });
   };
+
+  if (isLoading) {
+    return <CircularProgress />;
+  }
 
   return (
     <div className="friends-screen">
@@ -96,17 +89,20 @@ const FriendsScreen: React.FC = () => {
       )}
 
       <div className="friends-list">
-        <h2>Ваши друзья</h2>
-        {friends.map(friend => (
-          <div key={friend.id} className={`friend-item ${friend.joinedViaReferral ? 'referral-friend' : ''}`}>
-            <div className="friend-avatar">{friend.name[0]}</div>
-            <div className="friend-info">
-              <div className="friend-name">{friend.name}</div>
-              <div className="friend-status">{friend.status}</div>
-              {friend.joinedViaReferral && <div className="referral-badge">Реферал</div>}
+        <h2>Ваши реферальные друзья</h2>
+        {referrals.length > 0 ? (
+          referrals.map(referral => (
+            <div key={referral.id} className="friend-item">
+              <div className="friend-avatar">{referral.username[0]}</div>
+              <div className="friend-info">
+                <div className="friend-name">{referral.username}</div>
+                <div className="friend-status">Присоединился: {new Date(referral.joinedAt).toLocaleDateString()}</div>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <p>У вас пока нет реферальных друзей.</p>
+        )}
       </div>
 
       <Snackbar

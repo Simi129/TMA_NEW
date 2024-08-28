@@ -11,6 +11,12 @@ export type LoginResponse = {
     token: string;
 };
 
+export type Referral = {
+    id: number;
+    username: string;
+    joinedAt: string;
+};
+
 export const userService = Object.freeze({
     login: async (initData: string) => {
         const response = await axiosInstance.post<LoginResponse>("/auth/login", {
@@ -20,6 +26,10 @@ export const userService = Object.freeze({
     },
     getCurrentUser: async () => {
         const response = await axiosInstance.get<User>("/auth/me");
+        return response.data;
+    },
+    getReferrals: async () => {
+        const response = await axiosInstance.get<Referral[]>("/user/referrals");
         return response.data;
     }
 });
