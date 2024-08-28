@@ -18,11 +18,32 @@ const HomeScreen: React.FC = () => {
   const { totalCoins, addCoins } = useCoins();
   const { level } = useLevel();
   const [clickEffects, setClickEffects] = useState<ClickEffect[]>([]);
-  const imageRef = useRef<HTMLImageElement>(null);
+  const imageRef = useRef<HTMLButtonElement>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     const coinsToAdd = getCoinsPerClick(level);
     addCoins(coinsToAdd);
+
+    const rect = imageRef.current?.getBoundingClientRect();
+    if (rect) {
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const clickX = event.clientX;
+      const clickY = event.clientY;
+
+      // Изменяем направление смещения
+      const translateX = (clickX - centerX) / 5;
+      const translateY = (clickY - centerY) / 5;
+
+      if (imageRef.current) {
+        imageRef.current.style.transform = `translate(${translateX}px, ${translateY}px)`;
+        setTimeout(() => {
+          if (imageRef.current) {
+            imageRef.current.style.transform = 'translate(0, 0)';
+          }
+        }, 150); // Увеличиваем время возврата для более заметного эффекта
+      }
+    }
 
     const newEffect: ClickEffect = {
       id: Date.now(),
@@ -51,17 +72,15 @@ const HomeScreen: React.FC = () => {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        <div className={styles.topInfo}>
-          <div className={styles.balanceContainer}>
-            <p className={styles.balanceText}>Ваш баланс: {totalCoins}</p>
-          </div>
-          <div className={styles.walletContainer}>
-            <WalletDisplay />
-          </div>
+        <div className={styles.balanceContainer}>
+          <p className={styles.balanceText}>Ваш баланс: {totalCoins}</p>
+        </div>
+        <div className={styles.walletContainer}>
+          <WalletDisplay />
         </div>
         <div className={styles.imageContainer}>
-          <button onClick={handleClick} className={styles.clickableImage}>
-            <img ref={imageRef} src={coachImage} alt="Click to earn coin" />
+          <button ref={imageRef} onClick={handleClick} className={styles.clickableImage}>
+            <img src={coachImage} alt="Click to earn coin" />
           </button>
           {clickEffects.map(effect => (
             <span

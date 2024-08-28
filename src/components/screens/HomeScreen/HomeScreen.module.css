@@ -67,6 +67,7 @@
   cursor: pointer;
   outline: none;
   -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s ease-out;
 }
 
 .clickableImage:focus {
