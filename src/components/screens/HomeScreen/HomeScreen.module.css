@@ -18,8 +18,7 @@
 .balanceContainer {
   position: absolute;
   top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 10px;
   background-color: var(--tg-theme-secondary-bg-color);
   padding: 10px 15px;
   border-radius: 20px;
@@ -67,7 +66,9 @@
   cursor: pointer;
   outline: none;
   -webkit-tap-highlight-color: transparent;
-  transition: transform 0.15s ease-out;
+  transition: transform 0.3s ease-out;
+  transform-style: preserve-3d;
+  will-change: transform;
 }
 
 .clickableImage:focus {

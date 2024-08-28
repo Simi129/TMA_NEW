@@ -31,17 +31,33 @@ const HomeScreen: React.FC = () => {
       const clickX = event.clientX;
       const clickY = event.clientY;
 
-      // Изменяем направление смещения
-      const translateX = (clickX - centerX) / 5;
-      const translateY = (clickY - centerY) / 5;
+      // Вычисляем расстояние от центра до точки клика
+      const distanceX = clickX - centerX;
+      const distanceY = clickY - centerY;
+
+      // Нормализуем расстояние для создания эффекта наклона
+      const maxDistance = Math.max(rect.width, rect.height) / 2;
+      const normalizedX = distanceX / maxDistance;
+      const normalizedY = distanceY / maxDistance;
+
+      // Создаем эффект наклона и небольшого движения назад
+      const tiltX = normalizedY * 10; // Наклон по оси X (вертикальный наклон)
+      const tiltY = -normalizedX * 10; // Наклон по оси Y (горизонтальный наклон)
+      const moveX = normalizedX * 10; // Движение по X
+      const moveY = normalizedY * 10; // Движение по Y
 
       if (imageRef.current) {
-        imageRef.current.style.transform = `translate(${translateX}px, ${translateY}px)`;
+        imageRef.current.style.transform = `
+          translate(${moveX}px, ${moveY}px)
+          rotateX(${tiltX}deg)
+          rotateY(${tiltY}deg)
+          scale(0.95)
+        `;
         setTimeout(() => {
           if (imageRef.current) {
-            imageRef.current.style.transform = 'translate(0, 0)';
+            imageRef.current.style.transform = 'translate(0, 0) rotateX(0) rotateY(0) scale(1)';
           }
-        }, 150); // Увеличиваем время возврата для более заметного эффекта
+        }, 300);
       }
     }
 
