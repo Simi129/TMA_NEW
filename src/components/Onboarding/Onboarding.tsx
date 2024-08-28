@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Onboarding.module.css';
+import { config } from '../../utils/config';
+
+const onboardingImage = `${config.STATIC_URL}/Picsart_24-08-02_12-42-06-478.jpg`;
 
 interface OnboardingProps {
   onComplete: () => void;
@@ -30,7 +33,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     <div className={styles.onboarding}>
       <div className={styles.content}>
         <img 
-          src="/path-to-your-image.png" 
+          src={onboardingImage}
           alt="LastRunMan" 
           className={styles.image}
         />
