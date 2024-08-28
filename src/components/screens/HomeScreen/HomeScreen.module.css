@@ -2,9 +2,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   height: 100vh;
-  padding: 20px;
   background-color: var(--tg-theme-bg-color);
   color: var(--tg-theme-text-color);
   overflow: hidden;
@@ -32,6 +31,7 @@
   border-radius: 20px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
+
 
 .imageContainer {
   display: flex;
@@ -65,10 +65,8 @@
   width: auto;
   height: auto;
   max-width: 100%;
-  max-height: 70vh;
+  max-height: calc(100vh - 60px); /* Adjust based on your TopBar height */
   object-fit: contain;
-  transform: perspective(1000px) rotateX(var(--tiltX, 0)) rotateY(var(--tiltY, 0));
-  transition: transform 0.1s;
 }
 
 .clickEffect {
