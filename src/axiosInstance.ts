@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://72a7-46-109-142-185.ngrok-free.app';
+const API_URL = import.meta.env.VITE_API_URL || 'https://dc47-46-109-142-185.ngrok-free.app';
 
 const instance = axios.create({
   baseURL: API_URL,
