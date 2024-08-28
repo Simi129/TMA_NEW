@@ -1,27 +1,30 @@
 .container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  background-color: var(--tg-theme-bg-color);
-  color: var(--tg-theme-text-color);
+  height: 100%;
+  width: 100%;
   overflow: hidden;
+  position: relative;
 }
 
 .content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px;
+  position: relative;
+  overflow: hidden;
 }
 
 .balanceContainer {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
   background-color: var(--tg-theme-secondary-bg-color);
   padding: 10px 15px;
   border-radius: 20px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  margin-bottom: 20px;
+  z-index: 10;
 }
 
 .balanceText {
@@ -41,31 +44,40 @@
 }
 
 
+
 .imageContainer {
-  flex: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
+  overflow: hidden;
 }
 
 .clickableImage {
+  width: 100%;
+  height: 100%;
   background: none;
   border: none;
   padding: 0;
+  margin: 0;
   cursor: pointer;
-  transition: transform 0.2s;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.clickableImage:focus {
   outline: none;
 }
 
-.clickableImage:active {
-  transform: scale(0.95);
-}
-
 .clickableImage img {
-  max-width: 100%;
-  max-height: 100%;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
+  user-select: none;
 }
 
 .clickEffect {
