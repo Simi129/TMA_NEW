@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Button, TextField, Snackbar } from '@mui/material';
 import './FriendsScreen.css';
-import '../../../types'; // Импортируем типы
+import '../../../types';
 
 interface Friend {
   id: number;
   name: string;
   status: string;
+  joinedViaReferral: boolean;
 }
 
 interface InitData {
@@ -22,29 +23,36 @@ const FriendsScreen: React.FC = () => {
   const [initData, setInitData] = useState<InitData | null>(null);
 
   useEffect(() => {
-    // Попытка получить реальные данные из Telegram Web App
     const tg = window.Telegram?.WebApp;
     if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
       setInitData({ user: { id: tg.initDataUnsafe.user.id } });
     } else {
-      // Если реальные данные недоступны, генерируем случайный ID
       const randomId = Math.floor(Math.random() * 1000000) + 1;
       setInitData({ user: { id: randomId } });
     }
 
     // Здесь должен быть запрос к API для получения списка друзей
-    setFriends([
-      { id: 1, name: "Иван", status: "Присоединился" },
-      { id: 2, name: "Мария", status: "Ожидает" },
-      { id: 3, name: "Алексей", status: "Присоединился" },
-    ]);
+    // Имитация получения данных с сервера
+    fetchFriends();
   }, []);
+
+  const fetchFriends = async () => {
+    // Имитация запроса к API
+    const mockApiResponse = [
+      { id: 1, name: "Иван", status: "Присоединился", joinedViaReferral: true },
+      { id: 2, name: "Мария", status: "Ожидает", joinedViaReferral: false },
+      { id: 3, name: "Алексей", status: "Присоединился", joinedViaReferral: true },
+      { id: 4, name: "Елена", status: "Присоединился", joinedViaReferral: false },
+    ];
+
+    setFriends(mockApiResponse);
+  };
 
   const generateReferralLink = () => {
     if (initData && initData.user) {
       const userId = initData.user.id;
       const referralCode = btoa(userId.toString());
-      const botUsername = 'lastrunman_bot'; // Замените на username вашего бота
+      const botUsername = 'lastrunman_bot';
       const link = `https://t.me/${botUsername}?start=${referralCode}`;
       setReferralLink(link);
     } else {
@@ -90,11 +98,12 @@ const FriendsScreen: React.FC = () => {
       <div className="friends-list">
         <h2>Ваши друзья</h2>
         {friends.map(friend => (
-          <div key={friend.id} className="friend-item">
+          <div key={friend.id} className={`friend-item ${friend.joinedViaReferral ? 'referral-friend' : ''}`}>
             <div className="friend-avatar">{friend.name[0]}</div>
             <div className="friend-info">
               <div className="friend-name">{friend.name}</div>
               <div className="friend-status">{friend.status}</div>
+              {friend.joinedViaReferral && <div className="referral-badge">Реферал</div>}
             </div>
           </div>
         ))}
@@ -115,6 +124,3 @@ const FriendsScreen: React.FC = () => {
 };
 
 export default FriendsScreen;
-
-
-

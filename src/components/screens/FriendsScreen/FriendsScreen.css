@@ -108,3 +108,9 @@
   font-size: 14px;
   color: #666;
 }
+
+.referral-badge {
+  font-size: 0.8em;
+  color: #1976d2;
+  margin-top: 5px;
+}
