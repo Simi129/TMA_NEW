@@ -1,12 +1,19 @@
 .container {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
   height: 100vh;
   background-color: var(--tg-theme-bg-color);
   color: var(--tg-theme-text-color);
   overflow: hidden;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
 }
 
 .balanceContainer {
@@ -14,6 +21,7 @@
   padding: 10px 15px;
   border-radius: 20px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  margin-bottom: 20px;
 }
 
 .balanceText {
@@ -34,13 +42,11 @@
 
 
 .imageContainer {
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-grow: 1;
   width: 100%;
-  overflow: hidden;
-  position: relative;
 }
 
 .clickableImage {
@@ -50,22 +56,15 @@
   cursor: pointer;
   transition: transform 0.2s;
   outline: none;
-  position: relative;
 }
 
 .clickableImage:active {
   transform: scale(0.95);
 }
 
-.clickableImage:focus {
-  outline: none;
-}
-
 .clickableImage img {
-  width: auto;
-  height: auto;
   max-width: 100%;
-  max-height: calc(100vh - 60px); /* Adjust based on your TopBar height */
+  max-height: 100%;
   object-fit: contain;
 }
 
