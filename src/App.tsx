@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { HashRouter as Router, Route, Routes } from 'react-router-dom';
+import { HashRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { CoinProvider } from './contexts/CoinContext';
 import { LevelProvider } from './contexts/LevelContext';
 import { TonConnectUIProvider } from '@tonconnect/ui-react';
@@ -12,6 +12,7 @@ import UpgradesScreen from './components/screens/UpgradesScreen/UpgradesScreen';
 import StadiumScreen from './components/screens/StadiumScreen/StadiumScreen';
 import FriendsScreen from './components/screens/FriendsScreen/FriendsScreen';
 import QuestsScreen from './components/screens/QuestsScreen/QuestsScreen';
+import Onboarding from './components/Onboarding/Onboarding';
 import styles from './App.module.css';
 import './types';
 
@@ -36,6 +37,7 @@ const manifestUrl = 'https://simi129.github.io/TMA_NEW/tonconnect-manifest.json'
 
 export const App: React.FC = () => {
   const [isInitialized, setIsInitialized] = useState(false);
+  const [onboardingComplete, setOnboardingComplete] = useState(false);
 
   useEffect(() => {
     const initApp = async () => {
@@ -68,11 +70,19 @@ export const App: React.FC = () => {
     initApp();
   }, []);
 
+  const handleOnboardingComplete = () => {
+    setOnboardingComplete(true);
+  };
+
   if (!isInitialized) {
-    return <div>Loading...</div>;
+    return <div>Initializing...</div>;
   }
 
-    return (
+  if (!onboardingComplete) {
+    return <Onboarding onComplete={handleOnboardingComplete} />;
+  }
+
+  return (
     <ThemeProvider theme={theme}>
       <TonConnectUIProvider manifestUrl={manifestUrl}>
         <CoinProvider>
@@ -87,6 +97,7 @@ export const App: React.FC = () => {
                     <Route path="/stadium" element={<StadiumScreen />} />
                     <Route path="/friends" element={<FriendsScreen />} />
                     <Route path="/quests" element={<QuestsScreen />} />
+                    <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>
                 </Box>
                 <Box className={styles.bottomNavContainer}>
@@ -99,4 +110,4 @@ export const App: React.FC = () => {
       </TonConnectUIProvider>
     </ThemeProvider>
   );
-}
+};
