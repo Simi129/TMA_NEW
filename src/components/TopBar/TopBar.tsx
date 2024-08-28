@@ -4,7 +4,7 @@ import { useCoins } from '../../contexts/CoinContext';
 import styles from './TopBar.module.css';
 
 const TopBar: React.FC = () => {
-  const { level, getLevelProgress } = useLevel();
+  const { level, experience, experienceToNextLevel } = useLevel();
   const { totalCoins } = useCoins();
 
   const getCoinsPerHour = (level: number): number => {
@@ -13,15 +13,17 @@ const TopBar: React.FC = () => {
   };
 
   const coinsPerHour = getCoinsPerHour(level);
-  const progress = getLevelProgress();
+  const progress = (experience / experienceToNextLevel) * 100;
 
   return (
     <div className={styles.topBar}>
-      <div className={styles.infoContainer}>
+      <div className={styles.levelInfo}>
         <span className={styles.level}>Level: {level}</span>
-        <div className={styles.progressBar}>
-          <div className={styles.progressBarFill} style={{ width: `${progress}%` }}></div>
+        <div className={styles.progressBarContainer}>
+          <div className={styles.progressBar} style={{ width: `${progress}%` }}></div>
         </div>
+      </div>
+      <div className={styles.coinsInfo}>
         <span className={styles.coinsPerHour}>{coinsPerHour}/hr</span>
         <span className={styles.totalCoins}>{totalCoins} coins</span>
       </div>
