@@ -16,7 +16,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       setProgress((oldProgress) => {
         if (oldProgress === 100) {
           clearInterval(timer);
-          setTimeout(onComplete, 500); // Небольшая задержка перед переходом
+          setTimeout(onComplete, 500);
           return 100;
         }
         const diff = Math.random() * 10;
@@ -31,25 +31,18 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
   return (
     <div className={styles.onboarding}>
-      <div className={styles.content}>
         <img 
           src={onboardingImage}
           alt="LastRunMan" 
-          className={styles.image}
+          className={styles.backgroundImage}
         />
-        <h1 className={styles.title}>LastRunMan</h1>
-        <p className={styles.description}>
-          Беги, улучшайся и соревнуйся в этой увлекательной игре с кликером!
-        </p>
-      </div>
-      <div className={styles.loadingContainer}>
+        <div className={styles.progressBarContainer}>
         <div className={styles.progressBar}>
           <div 
             className={styles.progressFill} 
             style={{ width: `${progress}%` }}
           ></div>
         </div>
-        <p className={styles.loadingText}>Загрузка: {Math.round(progress)}%</p>
       </div>
     </div>
   );
