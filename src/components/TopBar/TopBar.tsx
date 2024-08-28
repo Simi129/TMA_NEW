@@ -4,23 +4,24 @@ import { useCoins } from '../../contexts/CoinContext';
 import styles from './TopBar.module.css';
 
 const TopBar: React.FC = () => {
-  const { level } = useLevel();
+  const { level, getLevelProgress } = useLevel();
   const { totalCoins } = useCoins();
 
-  // Примерный расчет монет в час. Этот расчет можно уточнить в зависимости от логики вашей игры
   const getCoinsPerHour = (level: number): number => {
-    // Базовое количество монет в час
     const baseCoinsPerHour = 10;
-    // Увеличение на 5 монет за каждый уровень
     return baseCoinsPerHour + (level - 1) * 5;
   };
 
   const coinsPerHour = getCoinsPerHour(level);
+  const progress = getLevelProgress();
 
   return (
     <div className={styles.topBar}>
       <div className={styles.infoContainer}>
         <span className={styles.level}>Level: {level}</span>
+        <div className={styles.progressBar}>
+          <div className={styles.progressBarFill} style={{ width: `${progress}%` }}></div>
+        </div>
         <span className={styles.coinsPerHour}>{coinsPerHour}/hr</span>
         <span className={styles.totalCoins}>{totalCoins} coins</span>
       </div>

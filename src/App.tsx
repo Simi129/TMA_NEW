@@ -72,17 +72,14 @@ export const App: React.FC = () => {
     return <div>Loading...</div>;
   }
 
-   return (
+    return (
     <ThemeProvider theme={theme}>
       <TonConnectUIProvider manifestUrl={manifestUrl}>
         <CoinProvider>
           <LevelProvider>
             <Router>
               <Box className={styles.appContainer}>
-                <TopBar 
-                  progress={50}
-                  coinsPerHour={10}
-                />
+                <TopBar />
                 <Box className={styles.contentContainer}>
                   <Routes>
                     <Route path="/" element={<HomeScreen />} />
