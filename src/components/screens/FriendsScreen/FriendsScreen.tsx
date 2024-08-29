@@ -7,18 +7,20 @@ const FriendsScreen: React.FC = () => {
   const [referralLink, setReferralLink] = useState<string>('');
   const [showSnackbar, setShowSnackbar] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchUser = async () => {
       try {
         const currentUser = await userService.getCurrentUser();
         setUser(currentUser);
       } catch (error) {
         console.error('Failed to fetch user data:', error);
+        setError('Failed to fetch user data. Please try again later.');
       }
     };
 
-    fetchUserData();
+    fetchUser();
   }, []);
 
   const generateReferralLink = () => {
@@ -29,17 +31,25 @@ const FriendsScreen: React.FC = () => {
       setReferralLink(link);
     } else {
       console.error('User data is not available');
+      setError('Unable to generate referral link. User data is missing.');
     }
   };
 
   const copyReferralLink = () => {
-    navigator.clipboard.writeText(referralLink)
-      .then(() => setShowSnackbar(true))
-      .catch(err => console.error('Failed to copy:', err));
+    if (referralLink) {
+      navigator.clipboard.writeText(referralLink)
+        .then(() => setShowSnackbar(true))
+        .catch(err => {
+          console.error('Failed to copy:', err);
+          setError('Failed to copy link. Please try again.');
+        });
+    }
   };
 
   return (
     <div className="friends-screen">
+      {error && <div className="error-message">{error}</div>}
+      
       <Button 
         variant="contained" 
         color="primary" 
