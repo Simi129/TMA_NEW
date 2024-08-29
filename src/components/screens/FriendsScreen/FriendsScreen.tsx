@@ -1,17 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, TextField, Snackbar } from '@mui/material';
 import './FriendsScreen.css';
+import { userService, User } from '../../../api/userService';
 
 const FriendsScreen: React.FC = () => {
   const [referralLink, setReferralLink] = useState<string>('');
   const [showSnackbar, setShowSnackbar] = useState<boolean>(false);
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const currentUser = await userService.getCurrentUser();
+        setUser(currentUser);
+      } catch (error) {
+        console.error('Failed to fetch user data:', error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const generateReferralLink = () => {
-    const dummyUserId = '12345'; // Заглушка для ID пользователя
-    const referralCode = btoa(dummyUserId);
-    const botUsername = 'lastrunman_bot';
-    const link = `https://t.me/${botUsername}?start=${referralCode}`;
-    setReferralLink(link);
+    if (user?.telegramId) {
+      const referralCode = btoa(user.telegramId.toString());
+      const botUsername = 'lastrunman_bot';
+      const link = `https://t.me/${botUsername}?start=${referralCode}`;
+      setReferralLink(link);
+    } else {
+      console.error('User data is not available');
+    }
   };
 
   const copyReferralLink = () => {
@@ -26,6 +44,7 @@ const FriendsScreen: React.FC = () => {
         variant="contained" 
         color="primary" 
         onClick={generateReferralLink}
+        disabled={!user}
       >
         Пригласить друга
       </Button>
