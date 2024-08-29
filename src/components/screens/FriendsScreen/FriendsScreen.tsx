@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, TextField, Snackbar } from '@mui/material';
-import './FriendsScreen.css';
 import { userService, User } from '../../../api/userService';
+import './FriendsScreen.css';
 
 const FriendsScreen: React.FC = () => {
   const [referralLink, setReferralLink] = useState<string>('');
@@ -12,7 +12,9 @@ const FriendsScreen: React.FC = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
+        console.log('Fetching user data...');
         const currentUser = await userService.getCurrentUser();
+        console.log('Received user data:', currentUser);
         setUser(currentUser);
       } catch (error) {
         console.error('Failed to fetch user data:', error);
@@ -21,16 +23,28 @@ const FriendsScreen: React.FC = () => {
     };
 
     fetchUser();
+
+    // Альтернативный способ получения данных пользователя
+    const tg = window.Telegram?.WebApp;
+    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+      console.log('Telegram WebApp user data:', tg.initDataUnsafe.user);
+    } else {
+      console.log('Telegram WebApp user data not available');
+    }
   }, []);
 
   const generateReferralLink = () => {
+    console.log('Generating referral link. User:', user);
     if (user?.telegramId) {
       const referralCode = btoa(user.telegramId.toString());
       const botUsername = 'lastrunman_bot';
       const link = `https://t.me/${botUsername}?start=${referralCode}`;
       setReferralLink(link);
+      console.log('Generated referral link:', link);
     } else {
-      setError('Unable to generate referral link. User data is missing.');
+      const errorMessage = 'Unable to generate referral link. User data is missing.';
+      console.error(errorMessage);
+      setError(errorMessage);
     }
   };
 
@@ -74,6 +88,11 @@ const FriendsScreen: React.FC = () => {
           </Button>
         </div>
       )}
+
+      <div className="friends-screen-debug">
+        <h3>Debug Info:</h3>
+        <pre>{JSON.stringify({ user, error }, null, 2)}</pre>
+      </div>
 
       <div className="friends-list">
         <h2>Приглашенные друзья</h2>
