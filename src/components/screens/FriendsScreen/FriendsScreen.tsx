@@ -13,34 +13,46 @@ const FriendsScreen: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const initUser = async () => {
-      try {
-        setIsLoading(true);
-        const currentUser = await userService.getCurrentUser();
-        setUser(currentUser);
-        const referralList = await userService.getReferrals();
-        setReferrals(referralList);
-      } catch (error) {
-        console.error('Failed to initialize user or fetch referrals:', error);
-        setError('Failed to load data. Please try again later.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const initUser = async () => {
+    try {
+      setIsLoading(true);
+      console.log('Fetching current user...');
+      const currentUser = await userService.getCurrentUser();
+      console.log('Current user:', currentUser);
+      setUser(currentUser);
 
-    initUser();
-  }, []);
+      console.log('Fetching referrals...');
+      const referralList = await userService.getReferrals();
+      console.log('Referrals:', referralList);
+      setReferrals(referralList);
+    } catch (error) {
+      console.error('Failed to initialize user or fetch referrals:', error);
+      setError('Failed to load data. Please try again later.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  initUser();
+}, []);
 
   const generateReferralLink = () => {
-    if (user) {
+  if (user && user.telegramId) {
+    try {
       const referralCode = btoa(user.telegramId.toString());
       const botUsername = 'lastrunman_bot'; // Замените на username вашего бота
       const link = `https://t.me/${botUsername}?start=${referralCode}`;
       setReferralLink(link);
-    } else {
-      setError('User data is not available');
+      console.log("Generated referral link:", link); // Для отладки
+    } catch (error) {
+      console.error('Error generating referral link:', error);
+      window.Telegram?.WebApp?.showAlert?.('Error generating referral link. Please try again.');
     }
-  };
+  } else {
+    console.error('User data or telegramId is not available');
+    window.Telegram?.WebApp?.showAlert?.('Unable to generate referral link. User data is missing.');
+  }
+};
 
   const copyReferralLink = () => {
     navigator.clipboard.writeText(referralLink)
