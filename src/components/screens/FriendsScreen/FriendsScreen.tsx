@@ -30,7 +30,6 @@ const FriendsScreen: React.FC = () => {
       const link = `https://t.me/${botUsername}?start=${referralCode}`;
       setReferralLink(link);
     } else {
-      console.error('User data is not available');
       setError('Unable to generate referral link. User data is missing.');
     }
   };
