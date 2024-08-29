@@ -16,10 +16,11 @@ const FriendsScreen: React.FC = () => {
       try {
         const currentUser = await userService.getCurrentUser();
         setUser(currentUser);
-        await fetchReferrals();
+        const referralList = await userService.getReferrals();
+        setReferrals(referralList);
       } catch (error) {
-        console.error('Failed to initialize user:', error);
-        window.Telegram?.WebApp?.showAlert?.('Failed to load user data. Please try again later.');
+        console.error('Failed to initialize user or fetch referrals:', error);
+        window.Telegram?.WebApp?.showAlert?.('Failed to load data. Please try again later.');
       } finally {
         setIsLoading(false);
       }
@@ -27,16 +28,6 @@ const FriendsScreen: React.FC = () => {
 
     initUser();
   }, []);
-
-  const fetchReferrals = async () => {
-    try {
-      const referralList = await userService.getReferrals();
-      setReferrals(referralList);
-    } catch (error) {
-      console.error('Failed to fetch referrals:', error);
-      window.Telegram?.WebApp?.showAlert?.('Failed to load referrals. Please try again later.');
-    }
-  };
 
   const generateReferralLink = () => {
     if (user) {
@@ -91,7 +82,7 @@ const FriendsScreen: React.FC = () => {
       <div className="friends-list">
         <h2>Ваши реферальные друзья</h2>
         {referrals.length > 0 ? (
-          referrals.map(referral => (
+          referrals.map((referral: Referral) => (
             <div key={referral.id} className="friend-item">
               <div className="friend-avatar">{referral.username[0]}</div>
               <div className="friend-info">
