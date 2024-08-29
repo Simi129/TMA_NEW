@@ -6,35 +6,20 @@ export type User = {
     username: string;
 };
 
-export type Referral = {
-    id: number;
-    username: string;
-    joinedAt: string;
+export type LoginResponse = {
+    user: User;
+    token: string;
 };
 
-export const userService = {
-    getCurrentUser: async (): Promise<User> => {
-        try {
-            const response = await axiosInstance.get<User>("/auth/me");
-            if (response.data && typeof response.data === 'object') {
-                return response.data;
-            }
-            throw new Error('Invalid user data received');
-        } catch (error) {
-            console.error("Error fetching current user:", error);
-            throw error;
-        }
+export const userService = Object.freeze({
+    login: async (initData: string) => {
+        const response = await axiosInstance.post<LoginResponse>("/auth/login", {
+            initData
+        });
+        return response.data;
     },
-    getReferrals: async (): Promise<Referral[]> => {
-        try {
-            const response = await axiosInstance.get<Referral[]>("/user/referrals");
-            if (Array.isArray(response.data)) {
-                return response.data;
-            }
-            throw new Error('Unexpected referrals data');
-        } catch (error) {
-            console.error("Error fetching referrals:", error);
-            throw error;
-        }
+    getCurrentUser: async () => {
+        const response = await axiosInstance.get<User>("/auth/me");
+        return response.data;
     }
-};
+});
