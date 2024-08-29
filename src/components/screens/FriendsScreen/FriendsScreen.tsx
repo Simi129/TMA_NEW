@@ -1,64 +1,72 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button, TextField, Snackbar, CircularProgress } from '@mui/material';
+import { userService, User, Referral } from '../../../api/userService';
 import './FriendsScreen.css';
 import '../../../types';
-
-interface InitData {
-  user?: {
-    id: number;
-  };
-}
 
 const FriendsScreen: React.FC = () => {
   const [referralLink, setReferralLink] = useState<string>('');
   const [showSnackbar, setShowSnackbar] = useState<boolean>(false);
-  const [initData, setInitData] = useState<InitData | null>(null);
+  const [referrals, setReferrals] = useState<Referral[]>([]);
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const initializeData = () => {
+  const fetchUserData = useCallback(async () => {
+    try {
       setIsLoading(true);
-      const tg = window.Telegram?.WebApp;
-      console.log('Telegram WebApp object:', tg); // Для отладки
-
-      if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
-        console.log('User data from Telegram:', tg.initDataUnsafe.user); // Для отладки
-        setInitData({ user: { id: tg.initDataUnsafe.user.id } });
+      setError(null);
+      
+      const currentUser = await userService.getCurrentUser();
+      console.log('Current user:', currentUser);
+      if (currentUser && typeof currentUser === 'object') {
+        setUser(currentUser);
       } else {
-        console.warn('Telegram user data not available, using fallback');
-        setInitData({ user: { id: 0 } }); // Fallback ID
+        throw new Error('Invalid user data received');
       }
+      
+      const referralList = await userService.getReferrals();
+      console.log('Referrals:', referralList);
+      if (Array.isArray(referralList)) {
+        setReferrals(referralList);
+      } else {
+        console.warn('Referrals data is not an array:', referralList);
+        setReferrals([]);
+      }
+    } catch (err) {
+      console.error('Error fetching user data:', err);
+      setError('Failed to load user data. Please try again.');
+    } finally {
       setIsLoading(false);
-    };
-
-    initializeData();
+    }
   }, []);
 
-  const generateReferralLink = () => {
-    console.log('Generating referral link. Init data:', initData); // Для отладки
-    if (initData?.user?.id) {
-      const userId = initData.user.id;
-      const referralCode = btoa(userId.toString());
+  useEffect(() => {
+    fetchUserData();
+  }, [fetchUserData]);
+
+  const generateReferralLink = useCallback(() => {
+    if (user?.telegramId) {
+      const referralCode = btoa(user.telegramId.toString());
       const botUsername = 'lastrunman_bot';
       const link = `https://t.me/${botUsername}?start=${referralCode}`;
       setReferralLink(link);
-      console.log('Generated referral link:', link); // Для отладки
+      console.log('Generated referral link:', link);
     } else {
-      const errorMessage = 'Unable to generate referral link. User data is missing.';
-      console.error(errorMessage);
-      setError(errorMessage);
+      setError('Unable to generate referral link. User data is missing.');
     }
-  };
+  }, [user]);
 
-  const copyReferralLink = () => {
-    navigator.clipboard.writeText(referralLink)
-      .then(() => setShowSnackbar(true))
-      .catch(err => {
-        console.error('Failed to copy:', err);
-        setError('Failed to copy link. Please try again.');
-      });
-  };
+  const copyReferralLink = useCallback(() => {
+    if (referralLink) {
+      navigator.clipboard.writeText(referralLink)
+        .then(() => setShowSnackbar(true))
+        .catch(err => {
+          console.error('Failed to copy:', err);
+          setError('Failed to copy link. Please try again.');
+        });
+    }
+  }, [referralLink]);
 
   if (isLoading) {
     return <CircularProgress />;
@@ -66,16 +74,16 @@ const FriendsScreen: React.FC = () => {
 
   return (
     <div className="friends-screen">
+      {error && <div className="error-message">{error}</div>}
+      
       <Button 
         variant="contained" 
         color="primary" 
         onClick={generateReferralLink}
-        disabled={!initData?.user?.id}
+        disabled={!user}
       >
-        Пригласить друга
+        Сгенерировать реферальную ссылку
       </Button>
-
-      {error && <div className="error-message">{error}</div>}
 
       {referralLink && (
         <div className="referral-link-container">
@@ -95,8 +103,22 @@ const FriendsScreen: React.FC = () => {
       )}
 
       <div className="friends-list">
-        <h2>Приглашенные друзья</h2>
-        <p>Список приглашенных друзей будет отображаться здесь.</p>
+        <h2>Ваши реферальные друзья</h2>
+        {referrals.length > 0 ? (
+          referrals.map((referral, index) => (
+            <div key={referral.id || index} className="friend-item">
+              <div className="friend-avatar">{referral.username ? referral.username[0] : 'U'}</div>
+              <div className="friend-info">
+                <div className="friend-name">{referral.username || 'Unknown'}</div>
+                <div className="friend-status">
+                  Присоединился: {referral.joinedAt ? new Date(referral.joinedAt).toLocaleDateString() : 'Unknown date'}
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p>У вас пока нет реферальных друзей.</p>
+        )}
       </div>
 
       <Snackbar
