@@ -31,8 +31,7 @@ export const userService = {
             if (Array.isArray(response.data)) {
                 return response.data;
             }
-            console.warn('Unexpected referrals data:', response.data);
-            return [];
+            throw new Error('Unexpected referrals data');
         } catch (error) {
             console.error("Error fetching referrals:", error);
             throw error;
