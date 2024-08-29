@@ -1,71 +1,90 @@
 import React, { useState, useEffect } from 'react';
-import { Button, TextField, Snackbar, CircularProgress } from '@mui/material';
-import { userService, User, Referral } from '../../../api/userService';
+import { Button, TextField, Snackbar } from '@mui/material';
 import './FriendsScreen.css';
 import '../../../types';
+
+interface Friend {
+  id: number;
+  name: string;
+  status: string;
+}
+
+interface InitData {
+  user?: {
+    id: number;
+  };
+}
 
 const FriendsScreen: React.FC = () => {
   const [referralLink, setReferralLink] = useState<string>('');
   const [showSnackbar, setShowSnackbar] = useState<boolean>(false);
-  const [referrals, setReferrals] = useState<Referral[]>([]);
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [friends, setFriends] = useState<Friend[]>([]);
+  const [initData, setInitData] = useState<InitData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const initData = async () => {
-      try {
-        setIsLoading(true);
-        const currentUser = await userService.getCurrentUser();
-        setUser(currentUser);
-        const referralList = await userService.getReferrals();
-        setReferrals(referralList);
-      } catch (error) {
-        console.error('Failed to initialize data:', error);
-        setError('Failed to load data. Please try again later.');
-      } finally {
-        setIsLoading(false);
+    const initializeData = () => {
+      const tg = window.Telegram?.WebApp;
+      console.log('Telegram WebApp object:', tg); // Для отладки
+
+      if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+        console.log('User data from Telegram:', tg.initDataUnsafe.user); // Для отладки
+        setInitData({ user: { id: tg.initDataUnsafe.user.id } });
+      } else {
+        console.warn('Telegram user data not available, using random ID');
+        const randomId = Math.floor(Math.random() * 1000000) + 1;
+        setInitData({ user: { id: randomId } });
       }
     };
 
-    initData();
+    initializeData();
+
+    // Имитация загрузки списка друзей
+    setFriends([
+      { id: 1, name: "Иван", status: "Присоединился" },
+      { id: 2, name: "Мария", status: "Ожидает" },
+      { id: 3, name: "Алексей", status: "Присоединился" },
+    ]);
   }, []);
 
   const generateReferralLink = () => {
-    if (user && user.telegramId) {
-      const referralCode = btoa(user.telegramId.toString());
-      const botUsername = 'lastrunman_bot'; // Замените на username вашего бота
+    console.log('Generating referral link. Init data:', initData); // Для отладки
+    if (initData?.user?.id) {
+      const userId = initData.user.id;
+      const referralCode = btoa(userId.toString());
+      const botUsername = 'lastrunman_bot';
       const link = `https://t.me/${botUsername}?start=${referralCode}`;
       setReferralLink(link);
+      console.log('Generated referral link:', link); // Для отладки
     } else {
-      setError('Unable to generate referral link. User data is missing.');
+      const errorMessage = 'User data is not available';
+      console.error(errorMessage);
+      setError(errorMessage);
+      window.Telegram?.WebApp?.showAlert?.(errorMessage);
     }
   };
 
   const copyReferralLink = () => {
     navigator.clipboard.writeText(referralLink)
-      .then(() => {
-        setShowSnackbar(true);
-      })
+      .then(() => setShowSnackbar(true))
       .catch(err => {
         console.error('Failed to copy:', err);
-        setError('Failed to copy link. Please try again.');
+        window.Telegram?.WebApp?.showAlert?.('Failed to copy link. Please try again.');
       });
   };
 
-  if (isLoading) {
-    return <CircularProgress />;
-  }
-
-  if (error) {
-    return <div className="error-message">{error}</div>;
-  }
-
   return (
     <div className="friends-screen">
-      <Button variant="contained" color="primary" onClick={generateReferralLink}>
+      <Button 
+        variant="contained" 
+        color="primary" 
+        onClick={generateReferralLink}
+        disabled={!initData?.user?.id}
+      >
         Сгенерировать реферальную ссылку
       </Button>
+
+      {error && <div className="error-message">{error}</div>}
 
       {referralLink && (
         <div className="referral-link-container">
@@ -85,20 +104,16 @@ const FriendsScreen: React.FC = () => {
       )}
 
       <div className="friends-list">
-        <h2>Ваши реферальные друзья</h2>
-        {referrals.length > 0 ? (
-          referrals.map(referral => (
-            <div key={referral.id} className="friend-item">
-              <div className="friend-avatar">{referral.username[0]}</div>
-              <div className="friend-info">
-                <div className="friend-name">{referral.username}</div>
-                <div className="friend-status">Присоединился: {new Date(referral.joinedAt).toLocaleDateString()}</div>
-              </div>
+        <h2>Ваши друзья</h2>
+        {friends.map(friend => (
+          <div key={friend.id} className="friend-item">
+            <div className="friend-avatar">{friend.name[0]}</div>
+            <div className="friend-info">
+              <div className="friend-name">{friend.name}</div>
+              <div className="friend-status">{friend.status}</div>
             </div>
-          ))
-        ) : (
-          <p>У вас пока нет реферальных друзей.</p>
-        )}
+          </div>
+        ))}
       </div>
 
       <Snackbar
