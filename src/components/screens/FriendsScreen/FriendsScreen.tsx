@@ -3,6 +3,8 @@ import { Button, TextField, Snackbar } from '@mui/material';
 import { userService, User } from '../../../api/userService';
 import './FriendsScreen.css';
 
+// Удалите локальное объявление window.Telegram
+
 const FriendsScreen: React.FC = () => {
   const [referralLink, setReferralLink] = useState<string>('');
   const [showSnackbar, setShowSnackbar] = useState<boolean>(false);
@@ -10,27 +12,32 @@ const FriendsScreen: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const initUser = async () => {
       try {
-        console.log('Fetching user data...');
-        const currentUser = await userService.getCurrentUser();
-        console.log('Received user data:', currentUser);
-        setUser(currentUser);
+        if (window.Telegram?.WebApp) {
+          window.Telegram.WebApp.ready();
+          const telegramUser = window.Telegram.WebApp.initDataUnsafe.user;
+          if (telegramUser) {
+            setUser({
+              id: telegramUser.id,
+              telegramId: telegramUser.id,
+              username: telegramUser.username || `${telegramUser.first_name || ''} ${telegramUser.last_name || ''}`.trim() || `User${telegramUser.id}`
+            });
+          } else {
+            throw new Error('Telegram user data is not available');
+          }
+        } else {
+          // Если Telegram WebApp недоступен, пробуем получить данные с сервера
+          const userData = await userService.getCurrentUser();
+          setUser(userData);
+        }
       } catch (error) {
-        console.error('Failed to fetch user data:', error);
-        setError('Failed to fetch user data. Please try again later.');
+        console.error('Failed to initialize user:', error);
+        setError('Failed to load user data. Please try again later.');
       }
     };
 
-    fetchUser();
-
-    // Альтернативный способ получения данных пользователя
-    const tg = window.Telegram?.WebApp;
-    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
-      console.log('Telegram WebApp user data:', tg.initDataUnsafe.user);
-    } else {
-      console.log('Telegram WebApp user data not available');
-    }
+    initUser();
   }, []);
 
   const generateReferralLink = () => {

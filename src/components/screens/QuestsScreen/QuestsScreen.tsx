@@ -4,8 +4,9 @@ import { Star, Wallet, Telegram, Group, Twitter } from '@mui/icons-material';
 import { useTonConnectUI } from '@tonconnect/ui-react';
 import DailyRewardCalendar from './DailyRewardCalendar';
 import styles from './QuestsScreen.module.css';
-import '../../../types';
 import { useCoins } from '../../../contexts/CoinContext';
+
+// Удалите локальное определение TelegramWebApp и глобальное объявление Window
 
 interface Quest {
   id: number;
@@ -32,7 +33,7 @@ const QuestsScreen: React.FC = () => {
 
     const tg = window.Telegram?.WebApp;
     
-    if (tg && typeof tg.openLink === 'function') {
+    if (tg && 'openLink' in tg) {
       tg.openLink(channelUrl);
     } else {
       window.open(channelUrl, '_blank');
@@ -52,7 +53,7 @@ const QuestsScreen: React.FC = () => {
       addCoins(150);
       
       const tg = window.Telegram?.WebApp;
-      if (tg && typeof tg.showAlert === 'function') {
+      if (tg && 'showAlert' in tg) {
         tg.showAlert('Вы успешно подписались на канал и получили 150 монет!');
       } else {
         alert('Вы успешно подписались на канал и получили 150 монет!');
@@ -75,7 +76,7 @@ const QuestsScreen: React.FC = () => {
         const tg = window.Telegram?.WebApp;
         console.log('TonConnect status:', tonConnectUI.connected);
         console.log('Telegram WebApp available:', !!tg);
-        if (tg && typeof tg.showAlert === 'function') {
+        if (tg && 'showAlert' in tg) {
           setTimeout(() => {
             tg.showAlert('Вы успешно подключили свой TON кошелёк и получили 200 монет!');
           }, 100);
@@ -86,7 +87,7 @@ const QuestsScreen: React.FC = () => {
     } catch (error) {
       console.error('Ошибка при подключении кошелька:', error);
       const tg = window.Telegram?.WebApp;
-      if (tg && typeof tg.showAlert === 'function') {
+      if (tg && 'showAlert' in tg) {
         tg.showAlert('Ошибка при подключении кошелька. Попробуйте ещё раз.');
       } else {
         alert('Ошибка при подключении кошелька. Попробуйте ещё раз.');

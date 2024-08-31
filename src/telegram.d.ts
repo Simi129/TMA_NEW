@@ -11,11 +11,18 @@ interface TelegramWebApps {
     sendData(data: string): void;
     openTelegramLink(url: string): void;
     platform: string;
-    // Добавляем недостающие методы
     ready(): void;
     showAlert(message: string): void;
     showConfirm(message: string): Promise<boolean>;
     openLink(url: string): void;
+    // Добавляем недостающие свойства
+    viewportStableHeight: number;
+    safeArea: {
+      top: number;
+      right: number;
+      bottom: number;
+      left: number;
+    };
   };
 }
 

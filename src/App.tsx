@@ -1,3 +1,5 @@
+/// <reference path="./telegram.d.ts" />
+
 import React, { useEffect, useState } from 'react';
 import { HashRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { CoinProvider } from './contexts/CoinContext';
@@ -14,7 +16,6 @@ import FriendsScreen from './components/screens/FriendsScreen/FriendsScreen';
 import QuestsScreen from './components/screens/QuestsScreen/QuestsScreen';
 import Onboarding from './components/Onboarding/Onboarding';
 import styles from './App.module.css';
-import './types';
 
 const theme = createTheme({
   components: {
@@ -49,14 +50,19 @@ export const App: React.FC = () => {
       bindThemeParamsCSSVars(tpResult);
 
       if (window.Telegram?.WebApp) {
-        document.documentElement.style.setProperty(
-          '--tg-viewport-stable-height',
-          `${window.Telegram.WebApp.viewportStableHeight}px`
-        );
-        document.documentElement.style.setProperty(
-          '--tg-bottom-safe-area',
-          `${window.Telegram.WebApp.safeArea?.bottom || 0}px`
-        );
+        const webApp = window.Telegram.WebApp;
+        if ('viewportStableHeight' in webApp) {
+          document.documentElement.style.setProperty(
+            '--tg-viewport-stable-height',
+            `${webApp.viewportStableHeight}px`
+          );
+        }
+        if ('safeArea' in webApp && webApp.safeArea) {
+          document.documentElement.style.setProperty(
+            '--tg-bottom-safe-area',
+            `${webApp.safeArea.bottom}px`
+          );
+        }
       }
 
       setIsInitialized(true);
