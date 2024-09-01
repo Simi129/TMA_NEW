@@ -1,14 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { Button, TextField, Snackbar, CircularProgress } from '@mui/material';
 import './FriendsScreen.css';
-import '../../../types'; // Импортируем типы
-import { userService, User } from '../../../api/userService';
+import '../../../types';
+
+interface Friend {
+  id: number;
+  name: string;
+  status: string;
+}
+
+interface InitData {
+  user?: {
+    id: number;
+  };
+}
 
 const FriendsScreen: React.FC = () => {
   const [referralLink, setReferralLink] = useState<string>('');
   const [showSnackbar, setShowSnackbar] = useState<boolean>(false);
-  const [referrals, setReferrals] = useState<User[]>([]);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [friends, setFriends] = useState<Friend[]>([]);
+  const [initData, setInitData] = useState<InitData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -16,9 +27,17 @@ const FriendsScreen: React.FC = () => {
     const initializeData = async () => {
       setLoading(true);
       try {
-        const user = await userService.getCurrentUser();
-        setCurrentUser(user);
-        await loadReferrals();
+        // Попытка получить реальные данные из Telegram Web App
+        const tg = window.Telegram?.WebApp;
+        if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+          setInitData({ user: { id: tg.initDataUnsafe.user.id } });
+        } else {
+          // Если реальные данные недоступны, генерируем случайный ID
+          const randomId = Math.floor(Math.random() * 1000000) + 1;
+          setInitData({ user: { id: randomId } });
+        }
+
+        await loadFriends();
       } catch (error) {
         console.error('Failed to initialize data:', error);
         setError('Failed to load data. Please try again later.');
@@ -30,29 +49,31 @@ const FriendsScreen: React.FC = () => {
     initializeData();
   }, []);
 
-  const loadReferrals = async () => {
+  const loadFriends = async () => {
     try {
-      const referralsData = await userService.getReferrals();
-      if (Array.isArray(referralsData)) {
-        setReferrals(referralsData);
-      } else {
-        console.error('Referrals data is not an array:', referralsData);
-        setError('Invalid referrals data received.');
-      }
+      // Здесь должен быть запрос к API для получения списка друзей
+      // Пока используем моковые данные
+      setFriends([
+        { id: 1, name: "Иван", status: "Присоединился" },
+        { id: 2, name: "Мария", status: "Ожидает" },
+        { id: 3, name: "Алексей", status: "Присоединился" },
+      ]);
     } catch (error) {
-      console.error('Failed to load referrals:', error);
-      setError('Failed to load referrals. Please try again later.');
+      console.error('Failed to load friends:', error);
+      setError('Failed to load friends. Please try again later.');
     }
   };
 
   const generateReferralLink = () => {
-    if (currentUser) {
-      const referralCode = btoa(currentUser.telegramId.toString());
+    if (initData && initData.user) {
+      const userId = initData.user.id;
+      const referralCode = btoa(userId.toString());
       const botUsername = 'lastrunman_bot'; // Замените на username вашего бота
       const link = `https://t.me/${botUsername}?start=${referralCode}`;
       setReferralLink(link);
     } else {
-      setError('Unable to generate referral link. User data is not available.');
+      console.error('User data is not available');
+      setError('Unable to generate referral link. Please try again later.');
     }
   };
 
@@ -98,12 +119,13 @@ const FriendsScreen: React.FC = () => {
 
       <div className="friends-list">
         <h2>Ваши рефералы</h2>
-        {referrals.length > 0 ? (
-          referrals.map(referral => (
-            <div key={referral.id} className="friend-item">
-              <div className="friend-avatar">{referral.username[0]}</div>
+        {friends.length > 0 ? (
+          friends.map(friend => (
+            <div key={friend.id} className="friend-item">
+              <div className="friend-avatar">{friend.name[0]}</div>
               <div className="friend-info">
-                <div className="friend-name">{referral.username}</div>
+                <div className="friend-name">{friend.name}</div>
+                <div className="friend-status">{friend.status}</div>
               </div>
             </div>
           ))
