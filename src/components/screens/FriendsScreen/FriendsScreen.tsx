@@ -33,7 +33,12 @@ const FriendsScreen: React.FC = () => {
   const loadReferrals = async () => {
     try {
       const referralsData = await userService.getReferrals();
-      setReferrals(referralsData);
+      if (Array.isArray(referralsData)) {
+        setReferrals(referralsData);
+      } else {
+        console.error('Referrals data is not an array:', referralsData);
+        setError('Invalid referrals data received.');
+      }
     } catch (error) {
       console.error('Failed to load referrals:', error);
       setError('Failed to load referrals. Please try again later.');
@@ -94,13 +99,12 @@ const FriendsScreen: React.FC = () => {
 
       <div className="friends-list">
         <h2>Ваши рефералы</h2>
-        {referrals.length > 0 ? (
+        {Array.isArray(referrals) && referrals.length > 0 ? (
           referrals.map(referral => (
             <div key={referral.id} className="friend-item">
               <div className="friend-avatar">{referral.username[0]}</div>
               <div className="friend-info">
                 <div className="friend-name">{referral.username}</div>
-                {/* Статус реферала, если он доступен в данных */}
               </div>
             </div>
           ))
@@ -124,4 +128,3 @@ const FriendsScreen: React.FC = () => {
 };
 
 export default FriendsScreen;
-
