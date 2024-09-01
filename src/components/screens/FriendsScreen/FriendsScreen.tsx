@@ -22,25 +22,28 @@ const FriendsScreen: React.FC = () => {
   const [initData, setInitData] = useState<InitData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [debugInfo, setDebugInfo] = useState<string>('');
 
   useEffect(() => {
     const initializeData = async () => {
       setLoading(true);
+      setDebugInfo('Initializing data...');
       try {
-        // Попытка получить реальные данные из Telegram Web App
         const tg = window.Telegram?.WebApp;
         if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
           setInitData({ user: { id: tg.initDataUnsafe.user.id } });
+          setDebugInfo(prev => `${prev}\nTelegram user data found: ${JSON.stringify(tg.initDataUnsafe.user)}`);
         } else {
-          // Если реальные данные недоступны, генерируем случайный ID
           const randomId = Math.floor(Math.random() * 1000000) + 1;
           setInitData({ user: { id: randomId } });
+          setDebugInfo(prev => `${prev}\nRandom user ID generated: ${randomId}`);
         }
 
         await loadFriends();
       } catch (error) {
         console.error('Failed to initialize data:', error);
         setError('Failed to load data. Please try again later.');
+        setDebugInfo(prev => `${prev}\nError during initialization: ${JSON.stringify(error)}`);
       } finally {
         setLoading(false);
       }
@@ -50,30 +53,37 @@ const FriendsScreen: React.FC = () => {
   }, []);
 
   const loadFriends = async () => {
+    setDebugInfo(prev => `${prev}\nLoading friends...`);
     try {
-      // Здесь должен быть запрос к API для получения списка друзей
-      // Пока используем моковые данные
-      setFriends([
+      // Имитация запроса к API
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      const mockFriends = [
         { id: 1, name: "Иван", status: "Присоединился" },
         { id: 2, name: "Мария", status: "Ожидает" },
         { id: 3, name: "Алексей", status: "Присоединился" },
-      ]);
+      ];
+      setFriends(mockFriends);
+      setDebugInfo(prev => `${prev}\nFriends loaded: ${JSON.stringify(mockFriends)}`);
     } catch (error) {
       console.error('Failed to load friends:', error);
       setError('Failed to load friends. Please try again later.');
+      setDebugInfo(prev => `${prev}\nError loading friends: ${JSON.stringify(error)}`);
     }
   };
 
   const generateReferralLink = () => {
+    setDebugInfo(prev => `${prev}\nGenerating referral link...`);
     if (initData && initData.user) {
       const userId = initData.user.id;
       const referralCode = btoa(userId.toString());
-      const botUsername = 'lastrunman_bot'; // Замените на username вашего бота
+      const botUsername = 'lastrunman_bot';
       const link = `https://t.me/${botUsername}?start=${referralCode}`;
       setReferralLink(link);
+      setDebugInfo(prev => `${prev}\nReferral link generated: ${link}`);
     } else {
       console.error('User data is not available');
       setError('Unable to generate referral link. Please try again later.');
+      setDebugInfo(prev => `${prev}\nError: User data not available for referral link generation`);
     }
   };
 
@@ -81,10 +91,12 @@ const FriendsScreen: React.FC = () => {
     navigator.clipboard.writeText(referralLink)
       .then(() => {
         setShowSnackbar(true);
+        setDebugInfo(prev => `${prev}\nReferral link copied to clipboard`);
       })
       .catch(err => {
         console.error('Failed to copy: ', err);
         setError('Failed to copy link. Please try again.');
+        setDebugInfo(prev => `${prev}\nError copying referral link: ${JSON.stringify(err)}`);
       });
   };
 
@@ -144,6 +156,11 @@ const FriendsScreen: React.FC = () => {
         onClose={() => setShowSnackbar(false)}
         message="Ссылка скопирована в буфер обмена"
       />
+
+      <div className="debug-info">
+        <h3>Debug Info:</h3>
+        <pre>{debugInfo}</pre>
+      </div>
     </div>
   );
 };
