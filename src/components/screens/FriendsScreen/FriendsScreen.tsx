@@ -1,95 +1,73 @@
 import React, { useState, useEffect } from 'react';
-import { Button, TextField, Snackbar, CircularProgress } from '@mui/material';
-import { userService, User } from '../../../api/userService';
+import { Button, TextField, Snackbar } from '@mui/material';
 import './FriendsScreen.css';
-import { TelegramWebApps } from '../../../types'; // Импортируем типы
+import '../../../types'; // Импортируем типы
 
-// Используем тип TelegramWebApps для определения window.Telegram
-declare global {
-  interface Window {
-    Telegram?: TelegramWebApps;
-  }
+interface Friend {
+  id: number;
+  name: string;
+  status: string;
+}
+
+interface InitData {
+  user?: {
+    id: number;
+  };
 }
 
 const FriendsScreen: React.FC = () => {
   const [referralLink, setReferralLink] = useState<string>('');
   const [showSnackbar, setShowSnackbar] = useState<boolean>(false);
-  const [user, setUser] = useState<User | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [friends, setFriends] = useState<Friend[]>([]);
+  const [initData, setInitData] = useState<InitData | null>(null);
 
   useEffect(() => {
-    const initUser = async () => {
-      try {
-        setLoading(true);
-        if (window.Telegram?.WebApp) {
-          window.Telegram.WebApp.ready();
-          const telegramUser = window.Telegram.WebApp.initDataUnsafe.user;
-          if (telegramUser) {
-            setUser({
-              id: telegramUser.id,
-              telegramId: telegramUser.id,
-              username: telegramUser.username || `${telegramUser.first_name || ''} ${telegramUser.last_name || ''}`.trim() || `User${telegramUser.id}`
-            });
-          } else {
-            throw new Error('Telegram user data is not available');
-          }
-        } else {
-          // Если Telegram WebApp недоступен, пробуем получить данные с сервера
-          const userData = await userService.getCurrentUser();
-          setUser(userData);
-        }
-      } catch (error) {
-        console.error('Failed to initialize user:', error);
-        setError('Failed to load user data. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
+    // Попытка получить реальные данные из Telegram Web App
+    const tg = window.Telegram?.WebApp;
+    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+      setInitData({ user: { id: tg.initDataUnsafe.user.id } });
+    } else {
+      // Если реальные данные недоступны, генерируем случайный ID
+      const randomId = Math.floor(Math.random() * 1000000) + 1;
+      setInitData({ user: { id: randomId } });
+    }
 
-    initUser();
+    // Здесь должен быть запрос к API для получения списка друзей
+    setFriends([
+      { id: 1, name: "Иван", status: "Присоединился" },
+      { id: 2, name: "Мария", status: "Ожидает" },
+      { id: 3, name: "Алексей", status: "Присоединился" },
+    ]);
   }, []);
 
   const generateReferralLink = () => {
-    if (user?.telegramId) {
-      const referralCode = btoa(user.telegramId.toString());
-      const botUsername = 'lastrunman_bot';
+    if (initData && initData.user) {
+      const userId = initData.user.id;
+      const referralCode = btoa(userId.toString());
+      const botUsername = 'lastrunman_bot'; // Замените на username вашего бота
       const link = `https://t.me/${botUsername}?start=${referralCode}`;
       setReferralLink(link);
-      console.log('Generated referral link:', link);
     } else {
-      const errorMessage = 'Unable to generate referral link. User data is missing.';
-      console.error(errorMessage);
-      setError(errorMessage);
+      console.error('User data is not available');
+      window.Telegram?.WebApp?.showAlert?.('Unable to generate referral link. Please try again later.');
     }
   };
 
   const copyReferralLink = () => {
-    if (referralLink) {
-      navigator.clipboard.writeText(referralLink)
-        .then(() => setShowSnackbar(true))
-        .catch(err => {
-          console.error('Failed to copy:', err);
-          setError('Failed to copy link. Please try again.');
-        });
-    }
+    navigator.clipboard.writeText(referralLink)
+      .then(() => {
+        setShowSnackbar(true);
+      })
+      .catch(err => {
+        console.error('Failed to copy: ', err);
+        window.Telegram?.WebApp?.showAlert?.('Failed to copy link. Please try again.');
+      });
   };
-
-  if (loading) {
-    return <CircularProgress />;
-  }
 
   return (
     <div className="friends-screen">
-      {error && <div className="error-message">{error}</div>}
-      
-      <Button 
-        variant="contained" 
-        color="primary" 
-        onClick={generateReferralLink}
-        disabled={!user}
-      >
-        Пригласить друга
+      <Button variant="contained" color="primary" onClick={generateReferralLink}>
+        Сгенерировать реферальную ссылку
       </Button>
 
       {referralLink && (
@@ -109,14 +87,17 @@ const FriendsScreen: React.FC = () => {
         </div>
       )}
 
-      <div className="friends-screen-debug">
-        <h3>Debug Info:</h3>
-        <pre>{JSON.stringify({ user, error }, null, 2)}</pre>
-      </div>
-
       <div className="friends-list">
-        <h2>Приглашенные друзья</h2>
-        <p>Список приглашенных друзей будет отображаться здесь.</p>
+        <h2>Ваши друзья</h2>
+        {friends.map(friend => (
+          <div key={friend.id} className="friend-item">
+            <div className="friend-avatar">{friend.name[0]}</div>
+            <div className="friend-info">
+              <div className="friend-name">{friend.name}</div>
+              <div className="friend-status">{friend.status}</div>
+            </div>
+          </div>
+        ))}
       </div>
 
       <Snackbar
@@ -134,3 +115,4 @@ const FriendsScreen: React.FC = () => {
 };
 
 export default FriendsScreen;
+
