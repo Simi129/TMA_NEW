@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Button, TextField, Snackbar } from '@mui/material';
+import { Button, TextField, Snackbar, CircularProgress } from '@mui/material';
 import { userService, User } from '../../../api/userService';
 import './FriendsScreen.css';
 
-// Удалите локальное объявление window.Telegram
+// Удаляем локальное объявление window.Telegram, так как оно теперь определено в telegram.d.ts
 
 const FriendsScreen: React.FC = () => {
   const [referralLink, setReferralLink] = useState<string>('');
   const [showSnackbar, setShowSnackbar] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const initUser = async () => {
       try {
+        setLoading(true);
         if (window.Telegram?.WebApp) {
           window.Telegram.WebApp.ready();
           const telegramUser = window.Telegram.WebApp.initDataUnsafe.user;
@@ -34,6 +36,8 @@ const FriendsScreen: React.FC = () => {
       } catch (error) {
         console.error('Failed to initialize user:', error);
         setError('Failed to load user data. Please try again later.');
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -41,7 +45,6 @@ const FriendsScreen: React.FC = () => {
   }, []);
 
   const generateReferralLink = () => {
-    console.log('Generating referral link. User:', user);
     if (user?.telegramId) {
       const referralCode = btoa(user.telegramId.toString());
       const botUsername = 'lastrunman_bot';
@@ -65,6 +68,10 @@ const FriendsScreen: React.FC = () => {
         });
     }
   };
+
+  if (loading) {
+    return <CircularProgress />;
+  }
 
   return (
     <div className="friends-screen">
