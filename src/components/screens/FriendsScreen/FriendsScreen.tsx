@@ -2,8 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Button, TextField, Snackbar, CircularProgress } from '@mui/material';
 import { userService, User } from '../../../api/userService';
 import './FriendsScreen.css';
+import { TelegramWebApps } from '../../../types'; // Импортируем типы
 
-// Удаляем локальное объявление window.Telegram, так как оно теперь определено в telegram.d.ts
+// Используем тип TelegramWebApps для определения window.Telegram
+declare global {
+  interface Window {
+    Telegram?: TelegramWebApps;
+  }
+}
 
 const FriendsScreen: React.FC = () => {
   const [referralLink, setReferralLink] = useState<string>('');
