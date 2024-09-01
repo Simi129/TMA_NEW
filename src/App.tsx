@@ -1,4 +1,4 @@
-/// <reference path="./telegram.d.ts" />
+
 
 import React, { useEffect, useState } from 'react';
 import { HashRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
@@ -39,6 +39,7 @@ const manifestUrl = 'https://simi129.github.io/TMA_NEW/tonconnect-manifest.json'
 export const App: React.FC = () => {
   const [isInitialized, setIsInitialized] = useState(false);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
+  const [isTelegramWebAppReady, setIsTelegramWebAppReady] = useState(false);
 
   useEffect(() => {
     const initApp = async () => {
@@ -50,6 +51,7 @@ export const App: React.FC = () => {
       bindThemeParamsCSSVars(tpResult);
 
       if (window.Telegram?.WebApp) {
+        window.Telegram.WebApp.ready();
         const webApp = window.Telegram.WebApp;
         if ('viewportStableHeight' in webApp) {
           document.documentElement.style.setProperty(
@@ -63,6 +65,9 @@ export const App: React.FC = () => {
             `${webApp.safeArea.bottom}px`
           );
         }
+        setIsTelegramWebAppReady(true);
+      } else {
+        console.warn('Telegram WebApp is not available');
       }
 
       setIsInitialized(true);
@@ -82,6 +87,10 @@ export const App: React.FC = () => {
 
   if (!isInitialized) {
     return <div>Initializing...</div>;
+  }
+
+  if (!isTelegramWebAppReady) {
+    return <div>Telegram WebApp is not available. Please open this app in Telegram.</div>;
   }
 
   if (!onboardingComplete) {

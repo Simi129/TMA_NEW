@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, TextField, Snackbar, CircularProgress } from '@mui/material';
 import './FriendsScreen.css';
 import '../../../types';
-import { TelegramWebApps } from '../../../types'; // Импортируем тип TelegramWebApps
+import { TelegramWebApps } from '../../../types';
 
 interface Referral {
   id: number;
@@ -10,7 +10,6 @@ interface Referral {
   status: string;
 }
 
-// Расширяем существующий тип TelegramWebApps, если нужно
 declare global {
   interface Window {
     Telegram?: TelegramWebApps;
@@ -28,18 +27,18 @@ const FriendsScreen: React.FC = () => {
     const initializeData = async () => {
       setLoading(true);
       try {
-        if (window.Telegram?.WebApp) {
-          window.Telegram.WebApp.ready();
-          const user = window.Telegram.WebApp.initDataUnsafe.user;
-          if (user) {
-            await loadReferrals(user.id);
-            generateReferralLink(user.id);
-          } else {
-            throw new Error('User data is not available');
-          }
-        } else {
+        if (!window.Telegram?.WebApp) {
           throw new Error('Telegram WebApp is not available');
         }
+
+        window.Telegram.WebApp.ready();
+        const user = window.Telegram.WebApp.initDataUnsafe.user;
+        if (!user) {
+          throw new Error('User data is not available');
+        }
+
+        await loadReferrals(user.id);
+        generateReferralLink(user.id);
       } catch (error) {
         console.error('Failed to initialize data:', error);
         setError('Failed to load data. Please try again later.');
@@ -74,10 +73,14 @@ const FriendsScreen: React.FC = () => {
   };
 
   const copyReferralLink = () => {
+    if (!referralLink) {
+      setError('Referral link is not available. Please try again.');
+      return;
+    }
     navigator.clipboard.writeText(referralLink)
       .then(() => setShowSnackbar(true))
       .catch(err => {
-        console.error('Failed to copy: ', err);
+        console.error('Failed to copy:', err);
         setError('Failed to copy link. Please try again.');
       });
   };
@@ -99,8 +102,14 @@ const FriendsScreen: React.FC = () => {
           }}
           variant="outlined"
           margin="normal"
+          placeholder="Реферальная ссылка будет сгенерирована здесь"
         />
-        <Button variant="contained" color="primary" onClick={copyReferralLink}>
+        <Button 
+          variant="contained" 
+          color="primary" 
+          onClick={copyReferralLink}
+          disabled={!referralLink}
+        >
           Копировать реферальную ссылку
         </Button>
       </div>
