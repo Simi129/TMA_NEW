@@ -1,14 +1,14 @@
-interface TelegramWebApps {
-  WebApp: {
-    initDataUnsafe: {
-      user?: {
-        id: number;
-        first_name: string;
-        last_name?: string;
-        username?: string;
-      };
-    };
-    sendData(data: string): void;
+//interface TelegramWebApps {
+  //WebApp: {
+    //initDataUnsafe: {
+   //   user?: {
+      //  id: number;
+        //first_name: string;
+      //  last_name?: string;
+       // username?: string;
+     // };
+    //};
+    /*sendData(data: string): void;
     openTelegramLink(url: string): void;
     platform: string;
     ready(): void;
@@ -26,10 +26,10 @@ interface TelegramWebApps {
   };
 }
 
-declare global {
-  interface Window {
-    Telegram?: TelegramWebApps;
-  }
-}
+//declare global {
+ // interface Window {
+   // Telegram?: TelegramWebApps;
+  //}
+//}
 
-export {};
+//export {};*/
