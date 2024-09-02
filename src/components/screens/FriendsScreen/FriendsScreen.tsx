@@ -2,18 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Button, TextField, Snackbar, CircularProgress } from '@mui/material';
 import './FriendsScreen.css';
 import '../../../types';
-import { TelegramWebApps } from '../../../types';
 
 interface Referral {
   id: number;
   name: string;
   status: string;
-}
-
-declare global {
-  interface Window {
-    Telegram?: TelegramWebApps;
-  }
 }
 
 const FriendsScreen: React.FC = () => {
@@ -50,20 +43,22 @@ const FriendsScreen: React.FC = () => {
     initializeData();
   }, []);
 
-  const loadReferrals = async (userId: number) => {
-    try {
-      // Здесь должен быть реальный API-запрос к вашему серверу
-      const response = await fetch(`/api/referrals?userId=${userId}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch referrals');
-      }
-      const data = await response.json();
-      setReferrals(data);
-    } catch (error) {
-      console.error('Failed to load referrals:', error);
-      setError('Failed to load referrals. Please try again later.');
-    }
-  };
+  const loadReferrals = async (_userId: number) => {
+  try {
+    // В будущем здесь будет реальный API-запрос, использующий userId
+    // Например: const response = await fetch(`/api/referrals?userId=${userId}`);
+    
+    // Пока используем моковые данные
+    const mockReferrals: Referral[] = [
+      { id: 1, name: "Иван", status: "Активный" },
+      { id: 2, name: "Мария", status: "Ожидает" },
+    ];
+    setReferrals(mockReferrals);
+  } catch (error) {
+    console.error('Failed to load referrals:', error);
+    setError('Failed to load referrals. Please try again later.');
+  }
+};
 
   const generateReferralLink = (userId: number) => {
     const referralCode = btoa(userId.toString());
