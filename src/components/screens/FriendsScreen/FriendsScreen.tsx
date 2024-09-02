@@ -15,13 +15,23 @@ const FriendsScreen: React.FC = () => {
     const initializeData = async () => {
       setLoading(true);
       try {
-        const currentUser = await userService.getCurrentUser();
+        console.log('Initializing data...');
+        let currentUser: User | null = null;
+        try {
+          currentUser = await userService.getCurrentUser();
+          console.log('Current user data:', currentUser);
+        } catch (userError) {
+          console.error('Error getting current user:', userError);
+        }
+
         if (currentUser && currentUser.telegramId) {
           generateReferralLink(currentUser.telegramId);
-          await loadReferrals();
         } else {
-          throw new Error('Failed to get current user data');
+          console.warn('Unable to generate referral link: No valid user data');
+          setError('Unable to generate referral link. Please try again later.');
         }
+
+        await loadReferrals();
       } catch (error) {
         console.error('Failed to initialize data:', error);
         setError('Failed to load data. Please try again later.');
@@ -35,7 +45,9 @@ const FriendsScreen: React.FC = () => {
 
   const loadReferrals = async () => {
     try {
+      console.log('Loading referrals...');
       const referralsData = await userService.getReferrals();
+      console.log('Referrals data:', referralsData);
       if (Array.isArray(referralsData)) {
         setReferrals(referralsData);
       } else {
@@ -53,6 +65,7 @@ const FriendsScreen: React.FC = () => {
       const botUsername = 'lastrunman_bot'; // Замените на username вашего бота
       const link = `https://t.me/${botUsername}?start=${referralCode}`;
       setReferralLink(link);
+      console.log('Generated referral link:', link);
     } catch (error) {
       console.error('Failed to generate referral link:', error);
       setError('Failed to generate referral link. Please try again later.');
