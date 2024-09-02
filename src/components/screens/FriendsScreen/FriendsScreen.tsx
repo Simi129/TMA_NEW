@@ -25,11 +25,6 @@ const FriendsScreen: React.FC = () => {
           console.error('Invalid user data:', currentUser);
           setError('Failed to get user data');
         }
-
-        console.log('Fetching referrals...');
-        const referralsData = await userService.getReferrals();
-        console.log('Fetched referrals:', referralsData);
-        setReferrals(referralsData);
       } catch (error) {
         console.error('Failed to initialize data:', error);
         setError(error instanceof Error ? error.message : 'Failed to load data. Please try again later.');
@@ -68,6 +63,21 @@ const FriendsScreen: React.FC = () => {
       });
   };
 
+  const fetchReferrals = async () => {
+    try {
+      setLoading(true);
+      console.log('Fetching referrals...');
+      const referralsData = await userService.getReferrals();
+      console.log('Fetched referrals:', referralsData);
+      setReferrals(referralsData);
+    } catch (error) {
+      console.error('Failed to fetch referrals:', error);
+      setError(error instanceof Error ? error.message : 'Failed to load referrals. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (loading) {
     return <CircularProgress />;
   }
@@ -96,6 +106,15 @@ const FriendsScreen: React.FC = () => {
           Копировать реферальную ссылку
         </Button>
       </div>
+
+      <Button 
+        variant="contained" 
+        color="secondary" 
+        onClick={fetchReferrals}
+        style={{ marginTop: '20px' }}
+      >
+        Загрузить список рефералов
+      </Button>
 
       <div className="referrals-list">
         <h2>Ваши рефералы</h2>
