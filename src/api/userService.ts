@@ -39,7 +39,14 @@ export const userService = {
   getReferrals: async (): Promise<User[]> => {
     try {
       const response = await axiosInstance.get<User[]>("/user/referrals");
-      return response.data;
+      console.log('Raw API response:', response);
+      
+      if (Array.isArray(response.data)) {
+        return response.data;
+      } else {
+        console.error('Invalid referrals data structure from API:', response.data);
+        throw new Error('Invalid referrals data structure from API');
+      }
     } catch (error) {
       console.error("Error fetching referrals:", error);
       throw error;
