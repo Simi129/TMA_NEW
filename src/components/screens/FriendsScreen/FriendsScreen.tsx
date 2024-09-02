@@ -2,17 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Button, TextField, Snackbar, CircularProgress } from '@mui/material';
 import './FriendsScreen.css';
 import '../../../types';
-
-interface Referral {
-  id: number;
-  name: string;
-  status: string;
-}
+import { userService, User } from '../../../api/userService';
 
 const FriendsScreen: React.FC = () => {
   const [referralLink, setReferralLink] = useState<string>('');
   const [showSnackbar, setShowSnackbar] = useState<boolean>(false);
-  const [referrals, setReferrals] = useState<Referral[]>([]);
+  const [referrals, setReferrals] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,22 +15,9 @@ const FriendsScreen: React.FC = () => {
     const initializeData = async () => {
       setLoading(true);
       try {
-        let userId: number;
-        if (window.Telegram?.WebApp) {
-          window.Telegram.WebApp.ready();
-          const user = window.Telegram.WebApp.initDataUnsafe.user;
-          if (user) {
-            userId = user.id;
-          } else {
-            throw new Error('User data is not available in Telegram WebApp');
-          }
-        } else {
-          console.warn('Telegram WebApp is not available, using mock user ID');
-          userId = 12345; // Мок ID для тестирования
-        }
-
-        await loadReferrals(userId);
-        generateReferralLink(userId);
+        const currentUser = await userService.getCurrentUser();
+        await loadReferrals();
+        generateReferralLink(currentUser.telegramId);
       } catch (error) {
         console.error('Failed to initialize data:', error);
         setError('Failed to load data. Please try again later.');
@@ -47,19 +29,10 @@ const FriendsScreen: React.FC = () => {
     initializeData();
   }, []);
 
-  const loadReferrals = async (_userId: number) => {
+  const loadReferrals = async () => {
     try {
-      // В будущем здесь будет реальный API-запрос
-      // const response = await fetch(`/api/referrals?userId=${_userId}`);
-      // const data = await response.json();
-      // setReferrals(data);
-
-      // Пока используем моковые данные
-      const mockReferrals: Referral[] = [
-        { id: 1, name: "Иван", status: "Активный" },
-        { id: 2, name: "Мария", status: "Ожидает" },
-      ];
-      setReferrals(mockReferrals);
+      const referralsData = await userService.getReferrals();
+      setReferrals(referralsData);
     } catch (error) {
       console.error('Failed to load referrals:', error);
       setError('Failed to load referrals. Please try again later.');
@@ -120,10 +93,9 @@ const FriendsScreen: React.FC = () => {
         {referrals.length > 0 ? (
           referrals.map(referral => (
             <div key={referral.id} className="referral-item">
-              <div className="referral-avatar">{referral.name[0]}</div>
+              <div className="referral-avatar">{referral.username[0]}</div>
               <div className="referral-info">
-                <div className="referral-name">{referral.name}</div>
-                <div className="referral-status">{referral.status}</div>
+                <div className="referral-name">{referral.username}</div>
               </div>
             </div>
           ))
