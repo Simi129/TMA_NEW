@@ -14,7 +14,7 @@ import FriendsScreen from './components/screens/FriendsScreen/FriendsScreen';
 import QuestsScreen from './components/screens/QuestsScreen/QuestsScreen';
 import Onboarding from './components/Onboarding/Onboarding';
 import styles from './App.module.css';
-import { TelegramWebApps } from './types';
+import './types';
 
 const theme = createTheme({
   components: {
@@ -38,13 +38,9 @@ const manifestUrl = 'https://simi129.github.io/TMA_NEW/tonconnect-manifest.json'
 export const App: React.FC = () => {
   const [isInitialized, setIsInitialized] = useState(false);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
-  const [isTelegramWebAppReady, setIsTelegramWebAppReady] = useState(false);
 
   useEffect(() => {
     const initApp = async () => {
-      console.log('Initializing app...');
-      console.log('Telegram object:', window.Telegram);
-
       const [vpResult, vpCleanup] = initViewport();
       const viewport = await vpResult;
       bindViewportCSSVars(viewport);
@@ -53,8 +49,6 @@ export const App: React.FC = () => {
       bindThemeParamsCSSVars(tpResult);
 
       if (window.Telegram?.WebApp) {
-        console.log('Telegram WebApp found, initializing...');
-        window.Telegram.WebApp.ready();
         const webApp = window.Telegram.WebApp;
         if ('viewportStableHeight' in webApp) {
           document.documentElement.style.setProperty(
@@ -67,47 +61,6 @@ export const App: React.FC = () => {
             '--tg-bottom-safe-area',
             `${webApp.safeArea.bottom}px`
           );
-        }
-        setIsTelegramWebAppReady(true);
-        console.log('Telegram WebApp initialized successfully');
-      } else {
-        console.warn('Telegram WebApp is not available');
-        if (import.meta.env.DEV) {
-          console.log('Development mode detected, using mock Telegram WebApp');
-          const mockTelegram: TelegramWebApps = {
-            WebApp: {
-              initDataUnsafe: {
-                user: {
-                  id: 12345,
-                  first_name: 'Test',
-                  last_name: 'User',
-                  username: 'testuser'
-                }
-              },
-              sendData: (data: string) => { console.log('Mock sendData:', data); },
-              openTelegramLink: (url: string) => { console.log('Mock openTelegramLink:', url); },
-              platform: 'mock',
-              ready: () => { console.log('Mock ready'); },
-              showAlert: (message: string) => { console.log('Mock showAlert:', message); },
-              showConfirm: (message: string) => Promise.resolve(true),
-              openLink: (url: string) => { console.log('Mock openLink:', url); },
-              viewportStableHeight: 700,
-              safeArea: {
-                top: 0,
-                right: 0,
-                bottom: 0,
-                left: 0
-              },
-              MainButton: {
-                text: 'Main Button',
-                onClick: (callback: () => void) => { callback(); },
-                show: () => { console.log('Mock MainButton show'); },
-                hide: () => { console.log('Mock MainButton hide'); }
-              }
-            }
-          };
-          window.Telegram = mockTelegram;
-          setIsTelegramWebAppReady(true);
         }
       }
 
@@ -128,10 +81,6 @@ export const App: React.FC = () => {
 
   if (!isInitialized) {
     return <div>Initializing...</div>;
-  }
-
-  if (!isTelegramWebAppReady) {
-    return <div>Telegram WebApp is not available. Please open this app in Telegram.</div>;
   }
 
   if (!onboardingComplete) {
@@ -168,4 +117,3 @@ export const App: React.FC = () => {
   );
 };
 
-export default App;
