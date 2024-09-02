@@ -20,18 +20,22 @@ const FriendsScreen: React.FC = () => {
     const initializeData = async () => {
       setLoading(true);
       try {
-        if (!window.Telegram?.WebApp) {
-          throw new Error('Telegram WebApp is not available');
+        let userId: number;
+        if (window.Telegram?.WebApp) {
+          window.Telegram.WebApp.ready();
+          const user = window.Telegram.WebApp.initDataUnsafe.user;
+          if (user) {
+            userId = user.id;
+          } else {
+            throw new Error('User data is not available in Telegram WebApp');
+          }
+        } else {
+          console.warn('Telegram WebApp is not available, using mock user ID');
+          userId = 12345; // Мок ID для тестирования
         }
 
-        window.Telegram.WebApp.ready();
-        const user = window.Telegram.WebApp.initDataUnsafe.user;
-        if (!user) {
-          throw new Error('User data is not available');
-        }
-
-        await loadReferrals(user.id);
-        generateReferralLink(user.id);
+        await loadReferrals(userId);
+        generateReferralLink(userId);
       } catch (error) {
         console.error('Failed to initialize data:', error);
         setError('Failed to load data. Please try again later.');
@@ -44,21 +48,23 @@ const FriendsScreen: React.FC = () => {
   }, []);
 
   const loadReferrals = async (_userId: number) => {
-  try {
-    // В будущем здесь будет реальный API-запрос, использующий userId
-    // Например: const response = await fetch(`/api/referrals?userId=${userId}`);
-    
-    // Пока используем моковые данные
-    const mockReferrals: Referral[] = [
-      { id: 1, name: "Иван", status: "Активный" },
-      { id: 2, name: "Мария", status: "Ожидает" },
-    ];
-    setReferrals(mockReferrals);
-  } catch (error) {
-    console.error('Failed to load referrals:', error);
-    setError('Failed to load referrals. Please try again later.');
-  }
-};
+    try {
+      // В будущем здесь будет реальный API-запрос
+      // const response = await fetch(`/api/referrals?userId=${_userId}`);
+      // const data = await response.json();
+      // setReferrals(data);
+
+      // Пока используем моковые данные
+      const mockReferrals: Referral[] = [
+        { id: 1, name: "Иван", status: "Активный" },
+        { id: 2, name: "Мария", status: "Ожидает" },
+      ];
+      setReferrals(mockReferrals);
+    } catch (error) {
+      console.error('Failed to load referrals:', error);
+      setError('Failed to load referrals. Please try again later.');
+    }
+  };
 
   const generateReferralLink = (userId: number) => {
     const referralCode = btoa(userId.toString());
