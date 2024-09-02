@@ -16,19 +16,14 @@ const FriendsScreen: React.FC = () => {
       setLoading(true);
       try {
         console.log('Initializing data...');
-        let currentUser: User | null = null;
-        try {
-          currentUser = await userService.getCurrentUser();
-          console.log('Current user data:', currentUser);
-        } catch (userError) {
-          console.error('Error getting current user:', userError);
-        }
-
+        const currentUser = await userService.getCurrentUser();
+        console.log('Current user:', currentUser);
+        
         if (currentUser && currentUser.telegramId) {
           generateReferralLink(currentUser.telegramId);
         } else {
-          console.warn('Unable to generate referral link: No valid user data');
-          setError('Unable to generate referral link. Please try again later.');
+          console.error('Invalid user data:', currentUser);
+          setError('Failed to get user data');
         }
 
         await loadReferrals();
@@ -43,33 +38,30 @@ const FriendsScreen: React.FC = () => {
     initializeData();
   }, []);
 
- const loadReferrals = async () => {
-  try {
-    console.log('Loading referrals...');
-    const referralsData = await userService.getReferrals();
-    console.log('Referrals loaded successfully:', referralsData);
-    setReferrals(referralsData);
-  } catch (error) {
-    console.error('Failed to load referrals:', error);
-    if (error instanceof Error) {
-      setError(`Failed to load referrals: ${error.message}`);
-    } else {
+  const loadReferrals = async () => {
+    try {
+      console.log('Loading referrals...');
+      const referralsData = await userService.getReferrals();
+      console.log('Raw referrals data:', referralsData);
+      
+      if (Array.isArray(referralsData)) {
+        setReferrals(referralsData);
+      } else {
+        throw new Error('Invalid referrals data structure');
+      }
+    } catch (error) {
+      console.error('Failed to load referrals:', error);
       setError('Failed to load referrals. Please try again later.');
     }
-  }
-};
+  };
 
   const generateReferralLink = (userId: number) => {
-    try {
-      const referralCode = btoa(userId.toString());
-      const botUsername = 'lastrunman_bot'; // Замените на username вашего бота
-      const link = `https://t.me/${botUsername}?start=${referralCode}`;
-      setReferralLink(link);
-      console.log('Generated referral link:', link);
-    } catch (error) {
-      console.error('Failed to generate referral link:', error);
-      setError('Failed to generate referral link. Please try again later.');
-    }
+    console.log('Generating referral link for user ID:', userId);
+    const referralCode = btoa(userId.toString());
+    const botUsername = 'lastrunman_bot'; // Замените на username вашего бота
+    const link = `https://t.me/${botUsername}?start=${referralCode}`;
+    console.log('Generated referral link:', link);
+    setReferralLink(link);
   };
 
   const copyReferralLink = () => {
@@ -107,7 +99,7 @@ const FriendsScreen: React.FC = () => {
         <Button 
           variant="contained" 
           color="primary" 
-          onClick={copyReferralLink}
+          onClick={() => navigator.clipboard.writeText(referralLink)}
           disabled={!referralLink}
         >
           Копировать реферальную ссылку
