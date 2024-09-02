@@ -14,6 +14,7 @@ const FriendsScreen: React.FC = () => {
   useEffect(() => {
     const initializeData = async () => {
       setLoading(true);
+      setError(null);
       try {
         console.log('Initializing data...');
         const currentUser = await userService.getCurrentUser();
@@ -40,18 +41,11 @@ const FriendsScreen: React.FC = () => {
 
   const loadReferrals = async () => {
     try {
-      console.log('Loading referrals...');
       const referralsData = await userService.getReferrals();
-      console.log('Raw referrals data:', referralsData);
-      
-      if (Array.isArray(referralsData)) {
-        setReferrals(referralsData);
-      } else {
-        throw new Error('Invalid referrals data structure');
-      }
+      setReferrals(referralsData);
     } catch (error) {
       console.error('Failed to load referrals:', error);
-      setError('Failed to load referrals. Please try again later.');
+      setError(error instanceof Error ? error.message : 'Failed to load referrals');
     }
   };
 
