@@ -8,6 +8,7 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
   (config) => {
+    console.log(`Sending request to: ${config.url}`);
     const token = localStorage.getItem('token');
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
@@ -15,6 +16,18 @@ instance.interceptors.request.use(
     return config;
   },
   (error) => {
+    console.error('Request interceptor error:', error);
+    return Promise.reject(error);
+  }
+);
+
+instance.interceptors.response.use(
+  (response) => {
+    console.log(`Received response from: ${response.config.url}`, response.data);
+    return response;
+  },
+  (error) => {
+    console.error('Response interceptor error:', error.response || error);
     return Promise.reject(error);
   }
 );

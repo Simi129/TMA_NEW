@@ -43,19 +43,12 @@ const FriendsScreen: React.FC = () => {
     initializeData();
   }, []);
 
-  const loadReferrals = async () => {
+ const loadReferrals = async () => {
   try {
     console.log('Loading referrals...');
     const referralsData = await userService.getReferrals();
-    console.log('Raw referrals data:', referralsData);
-
-    if (Array.isArray(referralsData)) {
-      setReferrals(referralsData);
-      console.log('Referrals loaded successfully:', referralsData);
-    } else {
-      console.error('Invalid referrals data structure:', referralsData);
-      throw new Error('Invalid referrals data structure');
-    }
+    console.log('Referrals loaded successfully:', referralsData);
+    setReferrals(referralsData);
   } catch (error) {
     console.error('Failed to load referrals:', error);
     if (error instanceof Error) {
