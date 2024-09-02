@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Button, TextField, Snackbar, CircularProgress } from '@mui/material';
 import './FriendsScreen.css';
 import { userService, User } from '../../../api/userService';
-import '../../../types'
 
 const FriendsScreen: React.FC = () => {
   const [referralLink, setReferralLink] = useState<string>('');
