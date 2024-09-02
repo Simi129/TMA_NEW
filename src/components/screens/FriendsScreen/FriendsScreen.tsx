@@ -16,8 +16,12 @@ const FriendsScreen: React.FC = () => {
       setLoading(true);
       try {
         const currentUser = await userService.getCurrentUser();
-        await loadReferrals();
-        generateReferralLink(currentUser.telegramId);
+        if (currentUser && currentUser.telegramId) {
+          generateReferralLink(currentUser.telegramId);
+          await loadReferrals();
+        } else {
+          throw new Error('Failed to get current user data');
+        }
       } catch (error) {
         console.error('Failed to initialize data:', error);
         setError('Failed to load data. Please try again later.');
@@ -32,7 +36,11 @@ const FriendsScreen: React.FC = () => {
   const loadReferrals = async () => {
     try {
       const referralsData = await userService.getReferrals();
-      setReferrals(referralsData);
+      if (Array.isArray(referralsData)) {
+        setReferrals(referralsData);
+      } else {
+        throw new Error('Invalid referrals data');
+      }
     } catch (error) {
       console.error('Failed to load referrals:', error);
       setError('Failed to load referrals. Please try again later.');
@@ -40,10 +48,15 @@ const FriendsScreen: React.FC = () => {
   };
 
   const generateReferralLink = (userId: number) => {
-    const referralCode = btoa(userId.toString());
-    const botUsername = 'lastrunman_bot'; // Замените на username вашего бота
-    const link = `https://t.me/${botUsername}?start=${referralCode}`;
-    setReferralLink(link);
+    try {
+      const referralCode = btoa(userId.toString());
+      const botUsername = 'lastrunman_bot'; // Замените на username вашего бота
+      const link = `https://t.me/${botUsername}?start=${referralCode}`;
+      setReferralLink(link);
+    } catch (error) {
+      console.error('Failed to generate referral link:', error);
+      setError('Failed to generate referral link. Please try again later.');
+    }
   };
 
   const copyReferralLink = () => {
@@ -90,12 +103,12 @@ const FriendsScreen: React.FC = () => {
 
       <div className="referrals-list">
         <h2>Ваши рефералы</h2>
-        {referrals.length > 0 ? (
+        {referrals && referrals.length > 0 ? (
           referrals.map(referral => (
             <div key={referral.id} className="referral-item">
-              <div className="referral-avatar">{referral.username[0]}</div>
+              <div className="referral-avatar">{referral.username ? referral.username[0] : '?'}</div>
               <div className="referral-info">
-                <div className="referral-name">{referral.username}</div>
+                <div className="referral-name">{referral.username || 'Неизвестный пользователь'}</div>
               </div>
             </div>
           ))
