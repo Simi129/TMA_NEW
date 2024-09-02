@@ -62,15 +62,17 @@ export const userService = {
         throw new Error(`Unexpected content type: ${response.headers['content-type']}`);
       }
     } catch (error) {
-      console.error("Error fetching referrals:", error);
       if (axios.isAxiosError(error) && error.response) {
         console.error('Axios error details:', {
           status: error.response.status,
           headers: error.response.headers,
           data: error.response.data
         });
+        throw new Error(`API error: ${error.response.status} ${error.response.statusText}`);
+      } else {
+        console.error("Error fetching referrals:", error);
+        throw error;
       }
-      throw error;
     }
   },
 };

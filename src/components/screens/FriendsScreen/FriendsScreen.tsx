@@ -11,7 +11,7 @@ const FriendsScreen: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+   useEffect(() => {
     const initializeData = async () => {
       setLoading(true);
       setError(null);
@@ -30,7 +30,7 @@ const FriendsScreen: React.FC = () => {
         await loadReferrals();
       } catch (error) {
         console.error('Failed to initialize data:', error);
-        setError('Failed to load data. Please try again later.');
+        setError(error instanceof Error ? error.message : 'Failed to load data. Please try again later.');
       } finally {
         setLoading(false);
       }
