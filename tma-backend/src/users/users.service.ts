@@ -35,4 +35,13 @@ export class UsersService {
 
     return user;
   }
+
+  // Добавляем новый метод для получения рефералов
+  async getReferrals(userId: number): Promise<User[]> {
+    // Предполагаем, что у вас есть поле referrerId в сущности User
+    // Если нет, вам нужно будет модифицировать сущность User и схему базы данных
+    return this.usersRepository.find({
+      where: { referrerId: userId },
+    });
+  }
 }

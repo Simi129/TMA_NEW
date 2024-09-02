@@ -1,22 +1,22 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity()
 export class User {
-    @PrimaryGeneratedColumn('increment')
-    id!: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({ type: "varchar", unique: true })
-    telegramId!: string;
+  @Column({ unique: true })
+  telegramId: string;
 
-    @Column({ type: "varchar" })
-    username!: string;
+  @Column()
+  username: string;
 
-    @Column({ type: "varchar", nullable: true })
-    firstName?: string;
+  @Column({ nullable: true })
+  referrerId: number;
 
-    @Column({ type: "varchar", nullable: true })
-    lastName?: string;
+  @ManyToOne(() => User, user => user.referrals)
+  referrer: User;
 
-    @Column({ type: "varchar", nullable: true })
-    languageCode?: string;
+  @OneToMany(() => User, user => user.referrer)
+  referrals: User[];
 }
