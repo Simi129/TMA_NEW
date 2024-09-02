@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://a0b4-46-109-142-185.ngrok-free.app';
+const API_URL = import.meta.env.VITE_API_URL || 'https://slow-corners-rule.loca.lt';
 
 const instance = axios.create({
   baseURL: API_URL,
