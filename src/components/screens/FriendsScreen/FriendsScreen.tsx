@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, TextField, Snackbar, CircularProgress } from '@mui/material';
 import './FriendsScreen.css';
-import '../../../types';
 import { userService, User } from '../../../api/userService';
 
 const FriendsScreen: React.FC = () => {
@@ -11,7 +10,7 @@ const FriendsScreen: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-   useEffect(() => {
+  useEffect(() => {
     const initializeData = async () => {
       setLoading(true);
       setError(null);
@@ -27,7 +26,8 @@ const FriendsScreen: React.FC = () => {
           setError('Failed to get user data');
         }
 
-        await loadReferrals();
+        const referralsData = await userService.getReferrals();
+        setReferrals(referralsData);
       } catch (error) {
         console.error('Failed to initialize data:', error);
         setError(error instanceof Error ? error.message : 'Failed to load data. Please try again later.');
@@ -39,23 +39,18 @@ const FriendsScreen: React.FC = () => {
     initializeData();
   }, []);
 
-  const loadReferrals = async () => {
-    try {
-      const referralsData = await userService.getReferrals();
-      setReferrals(referralsData);
-    } catch (error) {
-      console.error('Failed to load referrals:', error);
-      setError(error instanceof Error ? error.message : 'Failed to load referrals');
-    }
-  };
-
   const generateReferralLink = (userId: number) => {
-    console.log('Generating referral link for user ID:', userId);
-    const referralCode = btoa(userId.toString());
-    const botUsername = 'lastrunman_bot'; // Замените на username вашего бота
-    const link = `https://t.me/${botUsername}?start=${referralCode}`;
-    console.log('Generated referral link:', link);
-    setReferralLink(link);
+    try {
+      console.log('Generating referral link for user ID:', userId);
+      const referralCode = btoa(userId.toString());
+      const botUsername = 'lastrunman_bot'; // Замените на username вашего бота
+      const link = `https://t.me/${botUsername}?start=${referralCode}`;
+      console.log('Generated referral link:', link);
+      setReferralLink(link);
+    } catch (error) {
+      console.error('Failed to generate referral link:', error);
+      setError('Failed to generate referral link');
+    }
   };
 
   const copyReferralLink = () => {
@@ -93,7 +88,7 @@ const FriendsScreen: React.FC = () => {
         <Button 
           variant="contained" 
           color="primary" 
-          onClick={() => navigator.clipboard.writeText(referralLink)}
+          onClick={copyReferralLink}
           disabled={!referralLink}
         >
           Копировать реферальную ссылку
@@ -102,12 +97,12 @@ const FriendsScreen: React.FC = () => {
 
       <div className="referrals-list">
         <h2>Ваши рефералы</h2>
-        {referrals && referrals.length > 0 ? (
+        {referrals.length > 0 ? (
           referrals.map(referral => (
             <div key={referral.id} className="referral-item">
-              <div className="referral-avatar">{referral.username ? referral.username[0] : '?'}</div>
+              <div className="referral-avatar">{referral.username[0]}</div>
               <div className="referral-info">
-                <div className="referral-name">{referral.username || 'Неизвестный пользователь'}</div>
+                <div className="referral-name">{referral.username}</div>
               </div>
             </div>
           ))
