@@ -26,7 +26,9 @@ const FriendsScreen: React.FC = () => {
           setError('Failed to get user data');
         }
 
+        console.log('Fetching referrals...');
         const referralsData = await userService.getReferrals();
+        console.log('Fetched referrals:', referralsData);
         setReferrals(referralsData);
       } catch (error) {
         console.error('Failed to initialize data:', error);
