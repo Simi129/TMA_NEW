@@ -19,46 +19,56 @@ const FriendsScreen: React.FC = () => {
   const [initData, setInitData] = useState<InitData | null>(null);
 
   useEffect(() => {
-    const initializeData = async () => {
-      setLoading(true);
-      setError(null);
+  const initializeData = async () => {
+    setLoading(true);
+    setError(null);
 
-      try {
-        const tg = window.Telegram?.WebApp;
-        let userId: number | null = null;
+    try {
+      const tg = window.Telegram?.WebApp;
+      let userId: number | null = null;
 
-        if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
-          userId = tg.initDataUnsafe.user.id;
-          console.log("Got user ID from Telegram WebApp:", userId);
-        } else {
-          try {
-            const userData = await userService.getCurrentUser();
+      if (tg) {
+        await tg.ready();
+      }
+
+      if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+        userId = tg.initDataUnsafe.user.id;
+        console.log("Got user ID from Telegram WebApp:", userId);
+      } else {
+        try {
+          const userData = await userService.getCurrentUser();
+          if (userData && userData.telegramId) {
             userId = userData.telegramId;
             console.log("Got user ID from server:", userId);
-          } catch (serverError) {
-            console.error("Failed to get user data from server:", serverError);
+          } else {
+            throw new Error("No telegramId returned from server.");
           }
+        } catch (serverError) {
+          console.error("Failed to get user data from server:", serverError);
         }
-
-        if (!userId) {
-          console.error("Failed to obtain user ID from both Telegram and server.");
-          setError('Failed to initialize user data. Please reload the page.');
-          return;
-        }
-
-        const newInitData = { user: { id: userId } };
-        setInitData(newInitData);
-        generateReferralLink(userId);
-      } catch (error) {
-        console.error('Failed to initialize data:', error);
-        setError('Failed to initialize user data. Please reload the page.');
-      } finally {
-        setLoading(false);
       }
-    };
 
-    initializeData();
-  }, []);
+      if (!userId) {
+        throw new Error("Failed to obtain user ID from both Telegram and server.");
+      }
+
+      const newInitData = { user: { id: userId } };
+      setInitData(newInitData);
+      generateReferralLink(userId);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error('Failed to initialize data:', error.message);
+      } else {
+        console.error('Failed to initialize data:', error);
+      }
+      setError('Failed to initialize user data. Please reload the page.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  initializeData();
+}, []);
 
   const generateReferralLink = (userId: number) => {
     const referralCode = btoa(userId.toString());
