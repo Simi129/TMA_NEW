@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, TextField, Snackbar, CircularProgress } from '@mui/material';
 import './FriendsScreen.css';
 import { userService, User } from '../../../api/userService';
+import '../../../types';
 
 const FriendsScreen: React.FC = () => {
   const [referralLink, setReferralLink] = useState<string>('');
@@ -23,7 +24,7 @@ const FriendsScreen: React.FC = () => {
           generateReferralLink(currentUser.telegramId);
         } else {
           console.error('Invalid user data:', currentUser);
-          setError('Failed to get user data');
+          setError('Failed to get valid user data');
         }
       } catch (error) {
         console.error('Failed to initialize data:', error);
@@ -40,7 +41,7 @@ const FriendsScreen: React.FC = () => {
     try {
       console.log('Generating referral link for user ID:', userId);
       const referralCode = btoa(userId.toString());
-      const botUsername = 'lastrunman_bot'; // Замените на username вашего бота
+      const botUsername = 'lastrunman_bot'; // Replace with your bot's username
       const link = `https://t.me/${botUsername}?start=${referralCode}`;
       console.log('Generated referral link:', link);
       setReferralLink(link);

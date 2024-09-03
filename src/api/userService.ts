@@ -9,29 +9,32 @@ export interface User {
 
 export const userService = {
   getCurrentUser: async (): Promise<User> => {
+    console.log('Fetching current user...');
+    
+    // Try to get user data from Telegram WebApp
+    const tg = window.Telegram?.WebApp;
+    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+      console.log('Using Telegram WebApp data');
+      const telegramUser = tg.initDataUnsafe.user;
+      return {
+        id: telegramUser.id,
+        telegramId: telegramUser.id,
+        username: telegramUser.username || telegramUser.first_name || `User${telegramUser.id}`
+      };
+    }
+    
+    // If Telegram WebApp data is not available, try to fetch from server
     try {
-      console.log('Fetching current user...');
-      const tg = window.Telegram?.WebApp;
-      if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
-        console.log('Using Telegram WebApp data');
-        const telegramUser = tg.initDataUnsafe.user;
-        return {
-          id: telegramUser.id,
-          telegramId: telegramUser.id,
-          username: telegramUser.username || telegramUser.first_name || `User${telegramUser.id}`
-        };
-      }
-
       console.log('Fetching user data from server');
       const response = await axiosInstance.get<User>("/auth/me");
       console.log('Server response for current user:', response.data);
       return response.data;
     } catch (error) {
-      console.error("Error fetching current user:", error);
+      console.error("Error fetching current user from server:", error);
       if (axios.isAxiosError(error)) {
         console.error('Axios error details:', error.response?.data);
       }
-      throw new Error('Failed to get current user data');
+      throw new Error('Failed to get current user data from both Telegram WebApp and server');
     }
   },
 
