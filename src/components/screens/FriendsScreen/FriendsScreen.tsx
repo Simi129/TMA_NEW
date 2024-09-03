@@ -24,26 +24,24 @@ const FriendsScreen: React.FC = () => {
       setError(null);
 
       try {
-        // Попытка получить реальные данные из Telegram Web App
         const tg = window.Telegram?.WebApp;
-        let userId: number;
+        let userId: number | null = null;
 
         if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
           userId = tg.initDataUnsafe.user.id;
         } else {
-          // Если реальные данные недоступны, используем сохраненный ID или генерируем новый
-          const savedUserId = localStorage.getItem('userId');
-          if (savedUserId) {
-            userId = parseInt(savedUserId, 10);
-          } else {
-            userId = Math.floor(Math.random() * 1000000) + 1;
-            localStorage.setItem('userId', userId.toString());
-          }
+          // Если мы не в Telegram WebApp, пытаемся получить ID пользователя от сервера
+          const userData = await userService.getCurrentUser();
+          userId = userData.telegramId;
+        }
+
+        if (!userId) {
+          throw new Error('Unable to get user ID');
         }
 
         const newInitData = { user: { id: userId } };
         setInitData(newInitData);
-        generateReferralLink(newInitData);
+        generateReferralLink(userId);
       } catch (error) {
         console.error('Failed to initialize data:', error);
         setError('Failed to initialize user data. Please reload the page.');
@@ -55,16 +53,11 @@ const FriendsScreen: React.FC = () => {
     initializeData();
   }, []);
 
-  const generateReferralLink = (data: InitData) => {
-    if (data.user) {
-      const referralCode = btoa(data.user.id.toString());
-      const botUsername = 'simi129_bot'; // Замените на username вашего бота
-      const link = `https://t.me/${botUsername}?start=${referralCode}`;
-      setReferralLink(link);
-    } else {
-      console.error('User data is not available');
-      setError('Unable to generate referral link. User data is missing.');
-    }
+  const generateReferralLink = (userId: number) => {
+    const referralCode = btoa(userId.toString());
+    const botUsername = 'simi129_bot'; // Замените на username вашего бота
+    const link = `https://t.me/${botUsername}?start=${referralCode}`;
+    setReferralLink(link);
   };
 
   const copyReferralLink = () => {
@@ -80,7 +73,6 @@ const FriendsScreen: React.FC = () => {
 
   const fetchReferrals = async () => {
     if (!initData || !initData.user) {
-      console.error('User data is not available');
       setError('Unable to fetch referrals. User data is missing.');
       return;
     }
@@ -92,6 +84,11 @@ const FriendsScreen: React.FC = () => {
       console.log('Fetching referrals for user ID:', initData.user.id);
       const referralsData = await userService.getReferrals();
       console.log('Fetched referrals:', referralsData);
+      
+      if (!Array.isArray(referralsData)) {
+        throw new Error('Invalid referrals data format');
+      }
+      
       setReferrals(referralsData);
     } catch (error) {
       console.error('Failed to fetch referrals:', error);
