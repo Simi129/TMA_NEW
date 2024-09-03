@@ -29,14 +29,21 @@ const FriendsScreen: React.FC = () => {
 
         if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
           userId = tg.initDataUnsafe.user.id;
+          console.log("Got user ID from Telegram WebApp:", userId);
         } else {
-          // Если мы не в Telegram WebApp, пытаемся получить ID пользователя от сервера
-          const userData = await userService.getCurrentUser();
-          userId = userData.telegramId;
+          try {
+            const userData = await userService.getCurrentUser();
+            userId = userData.telegramId;
+            console.log("Got user ID from server:", userId);
+          } catch (serverError) {
+            console.error("Failed to get user data from server:", serverError);
+          }
         }
 
         if (!userId) {
-          throw new Error('Unable to get user ID');
+          // Если не удалось получить ID ни из Telegram, ни с сервера, генерируем локальный ID
+          userId = generateLocalUserId();
+          console.log("Generated local user ID:", userId);
         }
 
         const newInitData = { user: { id: userId } };
@@ -52,6 +59,16 @@ const FriendsScreen: React.FC = () => {
 
     initializeData();
   }, []);
+
+  const generateLocalUserId = (): number => {
+    const storedId = localStorage.getItem('localUserId');
+    if (storedId) {
+      return parseInt(storedId, 10);
+    }
+    const newId = Math.floor(Math.random() * 1000000) + 1;
+    localStorage.setItem('localUserId', newId.toString());
+    return newId;
+  };
 
   const generateReferralLink = (userId: number) => {
     const referralCode = btoa(userId.toString());
