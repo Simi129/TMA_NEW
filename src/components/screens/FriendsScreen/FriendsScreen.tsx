@@ -41,9 +41,9 @@ const FriendsScreen: React.FC = () => {
         }
 
         if (!userId) {
-          // Если не удалось получить ID ни из Telegram, ни с сервера, генерируем локальный ID
-          userId = generateLocalUserId();
-          console.log("Generated local user ID:", userId);
+          console.error("Failed to obtain user ID from both Telegram and server.");
+          setError('Failed to initialize user data. Please reload the page.');
+          return;
         }
 
         const newInitData = { user: { id: userId } };
@@ -59,16 +59,6 @@ const FriendsScreen: React.FC = () => {
 
     initializeData();
   }, []);
-
-  const generateLocalUserId = (): number => {
-    const storedId = localStorage.getItem('localUserId');
-    if (storedId) {
-      return parseInt(storedId, 10);
-    }
-    const newId = Math.floor(Math.random() * 1000000) + 1;
-    localStorage.setItem('localUserId', newId.toString());
-    return newId;
-  };
 
   const generateReferralLink = (userId: number) => {
     const referralCode = btoa(userId.toString());
@@ -101,11 +91,11 @@ const FriendsScreen: React.FC = () => {
       console.log('Fetching referrals for user ID:', initData.user.id);
       const referralsData = await userService.getReferrals();
       console.log('Fetched referrals:', referralsData);
-      
+
       if (!Array.isArray(referralsData)) {
         throw new Error('Invalid referrals data format');
       }
-      
+
       setReferrals(referralsData);
     } catch (error) {
       console.error('Failed to fetch referrals:', error);
@@ -122,7 +112,7 @@ const FriendsScreen: React.FC = () => {
   return (
     <div className="friends-screen">
       {error && <div className="error-message">{error}</div>}
-      
+
       <div className="referral-link-container">
         <TextField
           fullWidth
