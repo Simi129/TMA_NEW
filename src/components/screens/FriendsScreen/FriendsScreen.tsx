@@ -44,10 +44,9 @@ const FriendsScreen: React.FC = () => {
         const newInitData = { user: { id: userId } };
         setInitData(newInitData);
         generateReferralLink(newInitData);
-        await fetchReferrals();
       } catch (error) {
         console.error('Failed to initialize data:', error);
-        setError(error instanceof Error ? error.message : 'Failed to load data. Please try again later.');
+        setError('Failed to initialize user data. Please reload the page.');
       } finally {
         setLoading(false);
       }
@@ -86,6 +85,9 @@ const FriendsScreen: React.FC = () => {
       return;
     }
 
+    setLoading(true);
+    setError(null);
+
     try {
       console.log('Fetching referrals for user ID:', initData.user.id);
       const referralsData = await userService.getReferrals();
@@ -94,6 +96,8 @@ const FriendsScreen: React.FC = () => {
     } catch (error) {
       console.error('Failed to fetch referrals:', error);
       setError('Failed to fetch referrals. Please try again later.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -131,6 +135,7 @@ const FriendsScreen: React.FC = () => {
         color="secondary" 
         onClick={fetchReferrals}
         style={{ marginTop: '20px' }}
+        disabled={!initData || !initData.user}
       >
         Загрузить список рефералов
       </Button>
