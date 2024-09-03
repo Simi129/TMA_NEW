@@ -4,28 +4,37 @@ import './FriendsScreen.css';
 import { userService, User } from '../../../api/userService';
 import '../../../types';
 
+interface InitData {
+  user?: {
+    id: number;
+  };
+}
+
 const FriendsScreen: React.FC = () => {
   const [referralLink, setReferralLink] = useState<string>('');
   const [showSnackbar, setShowSnackbar] = useState<boolean>(false);
   const [referrals, setReferrals] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [initData, setInitData] = useState<InitData | null>(null);
 
   useEffect(() => {
     const initializeData = async () => {
       setLoading(true);
       setError(null);
+
+      // Попытка получить реальные данные из Telegram Web App
+      const tg = window.Telegram?.WebApp;
+      if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+        setInitData({ user: { id: tg.initDataUnsafe.user.id } });
+      } else {
+        // Если реальные данные недоступны, генерируем случайный ID
+        const randomId = Math.floor(Math.random() * 1000000) + 1;
+        setInitData({ user: { id: randomId } });
+      }
+
       try {
-        console.log('Initializing data...');
-        const currentUser = await userService.getCurrentUser();
-        console.log('Current user:', currentUser);
-        
-        if (currentUser && currentUser.telegramId) {
-          generateReferralLink(currentUser.telegramId);
-        } else {
-          console.error('Invalid user data:', currentUser);
-          setError('Failed to get valid user data');
-        }
+        await fetchReferrals();
       } catch (error) {
         console.error('Failed to initialize data:', error);
         setError(error instanceof Error ? error.message : 'Failed to load data. Please try again later.');
@@ -37,45 +46,45 @@ const FriendsScreen: React.FC = () => {
     initializeData();
   }, []);
 
-  const generateReferralLink = (userId: number) => {
-    try {
-      console.log('Generating referral link for user ID:', userId);
+  useEffect(() => {
+    if (initData && initData.user) {
+      generateReferralLink();
+    }
+  }, [initData]);
+
+  const generateReferralLink = () => {
+    if (initData && initData.user) {
+      const userId = initData.user.id;
       const referralCode = btoa(userId.toString());
-      const botUsername = 'lastrunman_bot'; // Replace with your bot's username
+      const botUsername = 'lastrunman_bot'; // Замените на username вашего бота
       const link = `https://t.me/${botUsername}?start=${referralCode}`;
-      console.log('Generated referral link:', link);
       setReferralLink(link);
-    } catch (error) {
-      console.error('Failed to generate referral link:', error);
-      setError('Failed to generate referral link');
+    } else {
+      console.error('User data is not available');
+      window.Telegram?.WebApp?.showAlert?.('Unable to generate referral link. Please try again later.');
     }
   };
 
   const copyReferralLink = () => {
-    if (!referralLink) {
-      setError('Referral link is not available. Please try again.');
-      return;
-    }
     navigator.clipboard.writeText(referralLink)
-      .then(() => setShowSnackbar(true))
+      .then(() => {
+        setShowSnackbar(true);
+      })
       .catch(err => {
-        console.error('Failed to copy:', err);
-        setError('Failed to copy link. Please try again.');
+        console.error('Failed to copy: ', err);
+        window.Telegram?.WebApp?.showAlert?.('Failed to copy link. Please try again.');
       });
   };
 
   const fetchReferrals = async () => {
     try {
-      setLoading(true);
       console.log('Fetching referrals...');
       const referralsData = await userService.getReferrals();
       console.log('Fetched referrals:', referralsData);
       setReferrals(referralsData);
     } catch (error) {
       console.error('Failed to fetch referrals:', error);
-      setError(error instanceof Error ? error.message : 'Failed to load referrals. Please try again later.');
-    } finally {
-      setLoading(false);
+      throw error;
     }
   };
 
