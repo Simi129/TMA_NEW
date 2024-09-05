@@ -13,6 +13,7 @@ import StadiumScreen from './components/screens/StadiumScreen/StadiumScreen';
 import FriendsScreen from './components/screens/FriendsScreen/FriendsScreen';
 import QuestsScreen from './components/screens/QuestsScreen/QuestsScreen';
 import Onboarding from './components/Onboarding/Onboarding';
+import { UserInitializer } from './components/UserInitializer/UserInitializer';
 import styles from './App.module.css';
 import './types';
 
@@ -93,6 +94,7 @@ export const App: React.FC = () => {
         <CoinProvider>
           <LevelProvider>
             <Router>
+            <UserInitializer />
               <Box className={styles.appContainer}>
                 <TopBar />
                 <Box className={styles.contentContainer}>
